@@ -1,0 +1,56 @@
+import 'package:flutter/material.dart';
+import 'package:nuvei_sdk_flutter/nuvei_sdk_flutter.dart';
+import 'package:nuvei_sdk_flutter/widget/filled_button_widget.dart';
+import 'package:nuvei_sdk_flutter_example/routes/app_router.dart';
+
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatefulWidget {
+  const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      routes: AppRouter.routes,
+      initialRoute: AppRouter().initialRoute,
+      debugShowCheckedModeBanner: false,
+    );
+  }
+}
+
+class WelcomeExample extends StatefulWidget {
+  const WelcomeExample({super.key});
+
+  @override
+  State<WelcomeExample> createState() => _WelcomeExampleState();
+}
+
+class _WelcomeExampleState extends State<WelcomeExample> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Plugin example app')),
+      body: Center(
+        child: FilledButtonWidget(
+          borderRadius: 20,
+          text: 'Inciar simulacion',
+          onPressed: () {
+            Navigator.pushNamed(context, 'home');
+          },
+        ),
+      ),
+    );
+  }
+}
