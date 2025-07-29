@@ -5,29 +5,28 @@ import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 
 class GlobalHelper {
-
-
-  static var logger =
-      Logger(printer: PrettyPrinter(methodCount: 0, printEmojis: false));
+  static var logger = Logger(
+    printer: PrettyPrinter(methodCount: 0, printEmojis: false),
+  );
 
   String _uniqueToken(String timeStamp, String key) {
-    var uniqueToken = utf8.encode('$key$timeStamp');
-    String uniqueTokenString = sha256.convert(uniqueToken).toString();
-    return uniqueTokenString;
-  }
+  var uniqueToken = utf8.encode('$key$timeStamp');
+  String uniqueTokenString = sha256.convert(uniqueToken).toString();
+  return uniqueTokenString;
+}
 
   String generateToken(String code, String key) {
-    String timeStamp =
-        (DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000).toString();
-    String uniqueToken = _uniqueToken(timeStamp, key);
-    String tokenFinal = code + timeStamp + uniqueToken;
-    return tokenFinal;
-  }
+  String timeStamp = (DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000).toString();
+  String uniqueToken = _uniqueToken(timeStamp, key);
+  String token = '$code;$timeStamp;$uniqueToken';
+  String tokenFinal = base64Encode(utf8.encode(token));
+  return tokenFinal;
+}
 
   static bool validateCardNumber(String cardNumber) {
     // Eliminar espacios y guiones
     cardNumber = cardNumber.replaceAll(RegExp(r'[\s-]+'), '');
-    
+
     // Verificar que solo contenga dígitos y tenga al menos 1 dígito
     if (!RegExp(r'^\d+$').hasMatch(cardNumber) || cardNumber.isEmpty) {
       return false;
@@ -54,8 +53,8 @@ class GlobalHelper {
     // El número es válido si la suma es divisible por 10
     return sum % 10 == 0;
   }
+
   static dismissKeyboard(BuildContext context) {
     FocusScope.of(context).unfocus();
   }
-
 }

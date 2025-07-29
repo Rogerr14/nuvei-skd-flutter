@@ -55,7 +55,7 @@ class _FilledButtonWidgetState extends State<FilledButtonWidget> {
               color: widget.textButtonColor ?? Colors.white,
               fontWeight: widget.fontWeight,
               fontFamily: widget.fontFamily,
-              // fontSize: widget.fontSize ?? responsive.dp(1.4)
+              fontSize: widget.fontSize  ?? 15
               ),
           textAlign: TextAlign.center),
     );

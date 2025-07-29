@@ -19,15 +19,15 @@ abstract class NuveiSdkFlutterTransactionInterface {
     throw UnimplementedError('Delete card has not been implemented');
   }
 
-  Future<String?> deleteCard(){
+  Future<dynamic> deleteCard({required String userId, required String tokenCard}){
     throw UnimplementedError('Delete card has not been implemented');
   } 
 
-  Future<List<CardModel>?> listCards(String uid){
+  Future<dynamic> listCards({required String userId}){
     throw UnimplementedError('Delete card has not been implemented');
   }
 
-  Future<CardModel?> addCard(CardModel card, UserModel user){
+  Future<dynamic> addCard(CardModel card, UserModel user){
     throw UnimplementedError('Delete card has not been implemented');
   }
   

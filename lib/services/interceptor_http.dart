@@ -12,7 +12,7 @@ import 'package:nuvei_sdk_flutter/model/error_model.dart';
 import 'package:nuvei_sdk_flutter/model/general_response.dart';
 
 class InterceptorHttp {
-  Future<GeneralResponse> request(
+  Future<dynamic> request(
     String method,
     String urlEndpoint,
     String code,
@@ -35,11 +35,8 @@ class InterceptorHttp {
         ? logger.log(Level.warning, 'body: ${json.encode(body)}')
         : null;
 
-    GeneralResponse generalResponse = GeneralResponse(
-      data: null,
-      message: "",
-      error: true,
-    );
+    dynamic data;
+
     try {
       http.Response _response;
       Uri uri = Uri.parse(url);
@@ -74,103 +71,100 @@ class InterceptorHttp {
           _response = await http.post(uri, body: jsonEncode(body));
           break;
       }
-      responseBody = _response.statusCode.toString();
+      responseBody = _response.body;
       logger.log(Level.error, responseBody);
-      responseStatusCode =  _response.statusCode;
+      responseStatusCode = _response.statusCode;
+      log(responseStatusCode.toString());
       logger.log(Level.trace, json.decode(responseBody));
       switch (responseStatusCode) {
         case 200:
-          var responseDecoded = json.decode(responseBody);
-          generalResponse.data = responseDecoded;
-          generalResponse.error = false;
-          generalResponse.message = "request ok";
+          data = json.decode(responseBody);
+          // generalResponse.data = responseDecoded;
+          // generalResponse.error = false;
+          // generalResponse.message = "request ok";
           break;
         case 400:
-          var responseDecoded = json.decode(responseBody);
-          generalResponse.data = responseDecoded;
-          generalResponse.error = true;
-          generalResponse.message = "Bad Request";
+          data =ErrorResponseModel.fromJson( json.decode(responseBody));
+          // generalResponse.data = responseDecoded;
+          // generalResponse.error = true;
+          // generalResponse.message = "Bad Request";
           break;
         case 401:
-          var responseDecoded = json.decode(responseBody);
-
-          generalResponse.data = errorResponseModelFromJson(
-            jsonEncode(responseDecoded),
-          );
-          generalResponse.error = true;
-          generalResponse.message = "Unauthorized ";
+          log(responseBody);
+          data =ErrorResponseModel.fromJson( json.decode(responseBody));
+          // generalResponse.data = errorResponseModelFromJson(
+          //   jsonEncode(responseDecoded),
+          // );
+          // generalResponse.error = true;
+          // generalResponse.message = "Unauthorized ";
           break;
         case 403:
-          var responseDecoded = json.decode(responseBody);
-          generalResponse.data = errorResponseModelFromJson(
-            jsonEncode(responseDecoded),
-          );
-          generalResponse.error = true;
-          generalResponse.message = "Forbidden";
+          data = ErrorResponseModel.fromJson( json.decode(responseBody));
+          // generalResponse.data = errorResponseModelFromJson(
+          //   jsonEncode(responseDecoded),
+          // );
+          // generalResponse.error = true;
+          // generalResponse.message = "Forbidden";
           break;
         case 404:
-          var responseDecoded = json.decode(responseBody);
+          data = ErrorResponseModel.fromJson( json.decode(responseBody));
 
-          generalResponse.data = errorResponseModelFromJson(
-            jsonEncode(responseDecoded),
-          );
-          generalResponse.error = true;
-          generalResponse.message = "Not found";
+          // generalResponse.data = errorResponseModelFromJson(
+          //   jsonEncode(responseDecoded),
+          // );
+          // generalResponse.error = true;
+          // generalResponse.message = "Not found";
           break;
         case 409:
-          var responseDecoded = json.decode(responseBody);
+          data = ErrorResponseModel.fromJson( json.decode(responseBody));
 
-          generalResponse.data = errorResponseModelFromJson(
-            jsonEncode(responseDecoded),
-          );
-          generalResponse.error = true;
-          generalResponse.message = "Conflict";
+          // generalResponse.data = errorResponseModelFromJson(
+          //   jsonEncode(responseDecoded),
+          // );
+          // generalResponse.error = true;
+          // generalResponse.message = "Conflict";
           break;
         case 500:
-          var responseDecoded = json.decode(responseBody);
-          generalResponse.data = errorResponseModelFromJson(
-            jsonEncode(responseDecoded),
-          );
-          generalResponse.error = true;
-          generalResponse.message = "Internal Server Error";
+          data =ErrorResponseModel.fromJson( json.decode(responseBody));
+          // generalResponse.data = errorResponseModelFromJson(
+          //   jsonEncode(responseDecoded),
+          // );
+          // generalResponse.error = true;
+          // generalResponse.message = "Internal Server Error";
           break;
         case 503:
-          var responseDecoded = json.decode(responseBody);
-          generalResponse.data = errorResponseModelFromJson(
-            jsonEncode(responseDecoded),
-          );
-          generalResponse.error = true;
-          generalResponse.message = "Service Unavailable";
+          data =ErrorResponseModel.fromJson( json.decode(responseBody));
+          // generalResponse.data = errorResponseModelFromJson(
+          //   jsonEncode(responseDecoded),
+          // );
+          // generalResponse.error = true;
+          // generalResponse.message = "Service Unavailable";
           break;
         default:
-          generalResponse.error = true;
-          generalResponse.message = "Error in request";
+        data= ErrorResponseModel(error: Error(type: 'Error in request', help: 'help', description: ""));
+        // generalResponse.error = true;
+        // generalResponse.message = "Error in request";
       }
     } on TimeoutException catch (e) {
-      generalResponse.data = ErrorResponseModel(
+      data = ErrorResponseModel(
         error: Error(
           type: 'Timeout',
           help: "Time to connection has been exceed, retry again ",
-          description: "",
+          description:"",
         ),
       );
       debugPrint('$e');
-      generalResponse.error = true;
-      generalResponse.message =
-          "Time to connection has been exceed, retry again ";
     } on FormatException catch (ex) {
-      generalResponse.data = ErrorResponseModel(
+      data = ErrorResponseModel(
         error: Error(
           type: 'Format Exception',
           help: "Invalid request format, review your attempt",
           description: "",
         ),
       );
-      generalResponse.error = true;
-      generalResponse.message = "Invalid request format, review your attempt";
       debugPrint(ex.toString());
     } on SocketException catch (exSock) {
-      generalResponse.data = ErrorResponseModel(
+      data = ErrorResponseModel(
         error: Error(
           type: 'Soclet Exception',
           help: "Connection error, review you internet connection",
@@ -178,13 +172,8 @@ class InterceptorHttp {
         ),
       );
       logger.e("Connection error, review you connection: $exSock");
-      //debugPrint("Error por conexion -> ${exSock.toString()}");
-      generalResponse.error = true;
-      //generalResponse.message = exSock.toString();
-      generalResponse.message =
-          "Connection error, review you internet connection";
     } on Exception catch (e, stacktrace) {
-      generalResponse.data = ErrorResponseModel(
+      data = ErrorResponseModel(
         error: Error(
           type: 'Exception',
           help: "Error on request",
@@ -192,11 +181,8 @@ class InterceptorHttp {
         ),
       );
       logger.e("Error on request: $stacktrace");
-      //debugPrint("Error en request -> ${stacktrace.toStrin  g()}");
-      generalResponse.error = true;
-      generalResponse.message = "Error on request, retry again.";
     }
-    return generalResponse;
+    return data;
   }
 
   HttpClient getHttpClient() {

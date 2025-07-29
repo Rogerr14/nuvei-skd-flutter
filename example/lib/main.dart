@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nuvei_sdk_flutter/nuvei_sdk_flutter.dart';
 import 'package:nuvei_sdk_flutter/widget/filled_button_widget.dart';
+import 'package:nuvei_sdk_flutter_example/environments/theme_config.dart';
 import 'package:nuvei_sdk_flutter_example/routes/app_router.dart';
 
 void main() {
@@ -41,14 +42,29 @@ class _WelcomeExampleState extends State<WelcomeExample> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Plugin example app')),
       body: Center(
-        child: FilledButtonWidget(
-          borderRadius: 20,
-          text: 'Inciar simulacion',
-          onPressed: () {
-            Navigator.pushNamed(context, 'home');
-          },
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+
+              children: [
+                Image.asset(ThemeConfig().logoImagePath, width: 240),
+                Text("Sdk", style: TextStyle(fontSize: 25),),
+                
+              ],
+            ),
+            SizedBox(height: 10,),
+            FilledButtonWidget(
+              borderRadius: 20,
+              text: 'Start simulation',
+              fontSize: 20,
+              onPressed: () {
+                Navigator.pushReplacementNamed(context, 'home');
+              },
+            ),
+          ],
         ),
       ),
     );

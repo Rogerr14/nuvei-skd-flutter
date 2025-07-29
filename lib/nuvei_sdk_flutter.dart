@@ -24,15 +24,15 @@ class NuveiSdkFlutter {
 
   NuveiSdkFlutter._internal();
 
-  Future<String?> deleteCard() async {
-    return NuveiSdkFlutterTransactionInterface.instance.deleteCard();
+  Future<dynamic> deleteCard({required String userId, required String tokenCard}) async {
+    return NuveiSdkFlutterTransactionInterface.instance.deleteCard(tokenCard: tokenCard, userId: userId);
   }
 
-  Future<List<CardModel>?> listCards(String uid) async {
-    return NuveiSdkFlutterTransactionInterface.instance.listCards(uid);
+  Future<dynamic> listCards({required String userId}) async {
+    return NuveiSdkFlutterTransactionInterface.instance.listCards(userId: userId);
   }
 
-  Future<CardModel?> addCard(CardModel card, UserModel user) async {
+  Future<dynamic> addCard(CardModel card, UserModel user) async {
     return NuveiSdkFlutterTransactionInterface.instance.addCard(card, user);
   }
 

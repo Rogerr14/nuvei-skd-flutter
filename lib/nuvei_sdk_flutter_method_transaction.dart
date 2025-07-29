@@ -1,7 +1,10 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:nuvei_sdk_flutter/env/environment.dart';
+import 'package:nuvei_sdk_flutter/helper/global_helper.dart';
 import 'package:nuvei_sdk_flutter/model/card_model.dart';
+import 'package:nuvei_sdk_flutter/model/error_model.dart';
 import 'package:nuvei_sdk_flutter/model/user_model.dart';
 import 'package:nuvei_sdk_flutter/nuvei_sdk_flutter_transaction_interface.dart';
 import 'package:nuvei_sdk_flutter/services/interceptor_http.dart';
@@ -29,30 +32,30 @@ class NuveiSdkFlutterMethodTransaction
   }
 
   @override
-  Future<String> deleteCard() async {
+  Future<dynamic> deleteCard({required String userId, required String tokenCard}) async {
     final urlEndpoint = '/v2/card/delete/';
     try {
       final response = await interceptorHttp.request(
         'POST',
         urlEndpoint,
         env.serverCode,
-        env.serverCode,
+        env.serverKey,
         {
-          "card": {"token": "090909"},
-          "user": {"id": "4"},
+          "card": {"token": tokenCard},
+          "user": {"id": userId},
         },
       );
-      if (!response.error) {
-        return response.data["message"];
+      if (response is! ErrorResponseModel) {
+        return response["message"];
       }
-      return "Error to deleta a card";
+      return response;
     } catch (e) {
       return "Error on request, try again";
     }
   }
 
   @override
-  Future<List<CardModel>?> listCards(String uid) async {
+  Future<dynamic> listCards({required String userId}) async {
     final urlEndpoint = "/v2/card/list";
     try {
       final response = await interceptorHttp.request(
@@ -61,23 +64,30 @@ class NuveiSdkFlutterMethodTransaction
         env.serverCode,
         env.serverKey,
         null,
-        queryParameters: {"uid": uid},
+        queryParameters: {"uid": userId},
       );
-      if (!response.error) {
-        log('response');
-        List<CardModel> listCards = List<CardModel>.from(
-          response.data["cards"].map((x) => CardModel.fromJson(x)),
-        );
-        return listCards;
+      GlobalHelper.logger.w(response);
+      if (response["error"] != null) {
+        
+        return response;
       }
-      return null;
+      List<CardModel> cards = List<CardModel>.from(
+        response["cards"].map((x) => CardModel.fromJson(x)),
+      );
+      return cards;
     } catch (e) {
-      return null;
+      return ErrorResponseModel(
+        error: Error(
+          type: 'Exception',
+          help: 'Exist an exeption $e',
+          description: "",
+        ),
+      );
     }
   }
 
   @override
-  Future<CardModel?> addCard(CardModel card, UserModel user) async {
+  Future<dynamic?> addCard(CardModel card, UserModel user) async {
     final urlEndpoint = "/v2/card/add";
     try {
       final response = await interceptorHttp.request(
