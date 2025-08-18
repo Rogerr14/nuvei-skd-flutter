@@ -1,5 +1,10 @@
+import 'dart:convert';
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:nuvei_sdk_flutter/helper/global_helper.dart';
 import 'package:nuvei_sdk_flutter/model/card_model.dart';
+import 'package:nuvei_sdk_flutter/model/debit_model.dart';
 import 'package:nuvei_sdk_flutter/nuvei_sdk_flutter.dart';
 import 'package:nuvei_sdk_flutter/widget/filled_button_widget.dart';
 import 'package:nuvei_sdk_flutter_example/constanst/constants.dart';
@@ -13,9 +18,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
- CardModel? cardModel;
-
-
+  CardModel? cardModel;
 
   @override
   void initState() {
@@ -95,44 +98,119 @@ class _HomePageState extends State<HomePage> {
                   SizedBox(
                     height: size.height * 0.15,
                     width: size.width * 0.8,
-                    child: InkWell(
-                      onTap: () async {
-                        var result = await Navigator.pushNamed(
-                          context,
-                          "list_card",
-                          arguments: cardModel,
-                        );
-                        if (result != null) {
-                          cardModel = result as CardModel?;
-                          setState(() {});
-                        }
-                      },
-                      child: Card(
+                    child: Card(
+                      child: InkWell(
+                        onTap: () async {
+                          var result = await Navigator.pushNamed(
+                            context,
+                            "list_card",
+                            arguments: cardModel,
+                          );
+                          if (result != null) {
+                            cardModel = result as CardModel?;
+
+                            setState(() {});
+                          }
+                        },
                         child: Padding(
                           padding: EdgeInsets.all(20),
-                          child: (cardModel == null)? Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children:
-                              [
-                                Text("No Card Selected", style: TextStyle(fontWeight: FontWeight.bold),),
-                                Text("Need to select a card to continue"),
-
-                              ]
-                                   
-                            
-                          ):
-                          Column(
-                            children: [
-                              Text(cardModel?.holderName ?? ''),
-                              Text('---- ---- ---- ${cardModel?.number ?? ''}'),
-                            ],
-                          ),
+                          child:
+                              (cardModel == null)
+                                  ? Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        "No Card Selected",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      Text("Need to select a card to continue"),
+                                    ],
+                                  )
+                                  : Column(
+                                    children: [
+                                      Text(cardModel?.holderName ?? ''),
+                                      Text(
+                                        '---- ---- ---- ${cardModel?.number ?? ''}',
+                                      ),
+                                      Text("cvc ${cardModel?.cvc ?? ''}"),
+                                    ],
+                                  ),
                         ),
                       ),
                     ),
                   ),
                   SizedBox(height: 19),
-                  FilledButtonWidget(text: 'Order pay'),
+                  FilledButtonWidget(
+                    text: 'Order pay',
+                    onPressed: () async {
+                      showDialog(
+                        context: context,
+                        builder:
+                            (context) =>
+                                Center(child: CircularProgressIndicator()),
+                      );
+                      final response = await NuveiSdkFlutter().debit(
+                        userInformation: User(
+                          id: Constants.userId,
+                          email: "email@gmail.com",
+                        ),
+                        ordeInformation: Order(
+                          amount: 88.9,
+                          description: "breakfast",
+                          devReference: "reference",
+                          vat: 0,
+                          taxableAmount: 0,
+                          taxPercentage: 0,
+                        ),
+                        cardInformation: CardModel(
+                          token: cardModel?.token ?? '',
+                        ),
+                      );
+                      Navigator.pop(context);
+                      if (!response.error) {
+                        log(jsonEncode(response.data));
+                        showDialog(
+                          context: context,
+                          builder:
+                              (context) => Scaffold(
+                                backgroundColor: Colors.transparent,
+                                body: Center(
+                                  child: SizedBox(
+                                    height:
+                                        MediaQuery.of(context).size.height *
+                                        0.3,
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.9,
+                                    child: Card(
+                                      child: Center(
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Text(
+                                              response.data,
+                                              style: TextStyle(fontSize: 20),
+                                            ),
+                                            FilledButtonWidget(
+                                              text: "Close",
+                                              onPressed: () async {
+                                                Navigator.pop(context);
+                                              },
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                        );
+                      }
+                    },
+                  ),
                 ],
               ),
             ],

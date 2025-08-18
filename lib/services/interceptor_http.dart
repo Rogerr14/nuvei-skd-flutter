@@ -12,7 +12,7 @@ import 'package:nuvei_sdk_flutter/model/error_model.dart';
 import 'package:nuvei_sdk_flutter/model/general_response.dart';
 
 class InterceptorHttp {
-  Future<dynamic> request(
+  Future<GeneralResponse> request(
     String method,
     String urlEndpoint,
     String code,
@@ -36,6 +36,8 @@ class InterceptorHttp {
         : null;
 
     dynamic data;
+
+    GeneralResponse generalResponse = GeneralResponse(error: false, data: null);
 
     try {
       http.Response _response;
@@ -78,111 +80,136 @@ class InterceptorHttp {
       logger.log(Level.trace, json.decode(responseBody));
       switch (responseStatusCode) {
         case 200:
-          data = json.decode(responseBody);
+          generalResponse.data = json.decode(responseBody);
+
           // generalResponse.data = responseDecoded;
-          // generalResponse.error = false;
+          generalResponse.error = false;
           // generalResponse.message = "request ok";
           break;
         case 400:
-          data =ErrorResponseModel.fromJson( json.decode(responseBody));
+          generalResponse.data = ErrorResponseModel.fromJson(
+            json.decode(responseBody),
+          );
           // generalResponse.data = responseDecoded;
-          // generalResponse.error = true;
+          generalResponse.error = true;
           // generalResponse.message = "Bad Request";
           break;
         case 401:
           log(responseBody);
-          data =ErrorResponseModel.fromJson( json.decode(responseBody));
+          generalResponse.data = ErrorResponseModel.fromJson(
+            json.decode(responseBody),
+          );
           // generalResponse.data = errorResponseModelFromJson(
           //   jsonEncode(responseDecoded),
           // );
-          // generalResponse.error = true;
+          generalResponse.error = true;
           // generalResponse.message = "Unauthorized ";
           break;
         case 403:
-          data = ErrorResponseModel.fromJson( json.decode(responseBody));
+          generalResponse.data = ErrorResponseModel.fromJson(
+            json.decode(responseBody),
+          );
           // generalResponse.data = errorResponseModelFromJson(
           //   jsonEncode(responseDecoded),
           // );
-          // generalResponse.error = true;
+          generalResponse.error = true;
           // generalResponse.message = "Forbidden";
           break;
         case 404:
-          data = ErrorResponseModel.fromJson( json.decode(responseBody));
+          generalResponse.data = ErrorResponseModel.fromJson(
+            json.decode(responseBody),
+          );
 
           // generalResponse.data = errorResponseModelFromJson(
           //   jsonEncode(responseDecoded),
           // );
-          // generalResponse.error = true;
+          generalResponse.error = true;
           // generalResponse.message = "Not found";
           break;
         case 409:
-          data = ErrorResponseModel.fromJson( json.decode(responseBody));
+          generalResponse.data = ErrorResponseModel.fromJson(
+            json.decode(responseBody),
+          );
 
           // generalResponse.data = errorResponseModelFromJson(
           //   jsonEncode(responseDecoded),
           // );
-          // generalResponse.error = true;
+          generalResponse.error = true;
           // generalResponse.message = "Conflict";
           break;
         case 500:
-          data =ErrorResponseModel.fromJson( json.decode(responseBody));
+          generalResponse.data = ErrorResponseModel.fromJson(
+            json.decode(responseBody),
+          );
           // generalResponse.data = errorResponseModelFromJson(
           //   jsonEncode(responseDecoded),
           // );
-          // generalResponse.error = true;
+          generalResponse.error = true;
           // generalResponse.message = "Internal Server Error";
           break;
         case 503:
-          data =ErrorResponseModel.fromJson( json.decode(responseBody));
+          generalResponse.data = ErrorResponseModel.fromJson(
+            json.decode(responseBody),
+          );
           // generalResponse.data = errorResponseModelFromJson(
           //   jsonEncode(responseDecoded),
           // );
-          // generalResponse.error = true;
+          generalResponse.error = true;
           // generalResponse.message = "Service Unavailable";
           break;
         default:
-        data= ErrorResponseModel(error: Error(type: 'Error in request', help: 'help', description: ""));
-        // generalResponse.error = true;
+          generalResponse.data = ErrorResponseModel(
+            error: Error(
+              type: 'Error in request',
+              help: 'help',
+              description: "",
+            ),
+          );
+          generalResponse.error = true;
         // generalResponse.message = "Error in request";
       }
     } on TimeoutException catch (e) {
-      data = ErrorResponseModel(
+      generalResponse.data = ErrorResponseModel(
         error: Error(
           type: 'Timeout',
           help: "Time to connection has been exceed, retry again ",
-          description:"",
+          description: "",
         ),
       );
+      generalResponse.error = true;
       debugPrint('$e');
     } on FormatException catch (ex) {
-      data = ErrorResponseModel(
+      generalResponse.data = ErrorResponseModel(
         error: Error(
           type: 'Format Exception',
           help: "Invalid request format, review your attempt",
           description: "",
         ),
       );
+      generalResponse.error = true;
       debugPrint(ex.toString());
     } on SocketException catch (exSock) {
-      data = ErrorResponseModel(
+      generalResponse.data = ErrorResponseModel(
         error: Error(
           type: 'Soclet Exception',
           help: "Connection error, review you internet connection",
           description: "",
         ),
       );
+      generalResponse.error = true;
       logger.e("Connection error, review you connection: $exSock");
     } on Exception catch (e, stacktrace) {
-      data = ErrorResponseModel(
+      generalResponse.data = ErrorResponseModel(
         error: Error(
           type: 'Exception',
           help: "Error on request",
           description: "",
         ),
       );
+      generalResponse.error = true;
       logger.e("Error on request: $stacktrace");
     }
-    return data;
+    return generalResponse;
   }
 
   HttpClient getHttpClient() {

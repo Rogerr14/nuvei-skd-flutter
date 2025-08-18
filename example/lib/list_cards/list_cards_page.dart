@@ -4,8 +4,10 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:nuvei_sdk_flutter/model/card_model.dart';
 import 'package:nuvei_sdk_flutter/model/error_model.dart';
+import 'package:nuvei_sdk_flutter/model/list_card_model.dart';
 import 'package:nuvei_sdk_flutter/nuvei_sdk_flutter.dart';
 import 'package:nuvei_sdk_flutter/widget/filled_button_widget.dart';
+import 'package:nuvei_sdk_flutter_example/add_card/add_card_page.dart';
 import 'package:nuvei_sdk_flutter_example/constanst/constants.dart';
 import 'package:nuvei_sdk_flutter_example/environments/theme_config.dart';
 
@@ -18,34 +20,50 @@ class ListCardsPage extends StatefulWidget {
 }
 
 class _ListCardsPageState extends State<ListCardsPage> {
-  List<CardModel> cardModel = [];
+  List<CardModel> listCardsAvaliable = [];
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+
     getCards();
+    });
   }
 
   void getCards() async {
+    showDialog(
+      context: context,
+      builder: (context) => Center(child: CircularProgressIndicator()),
+    );
     final response = await NuveiSdkFlutter().listCards(
       userId: Constants.userId,
     );
-    if (response is! ErrorResponseModel) {
-      // log(jsonEncode(response));
-      cardModel = response;
-      setState(() {
-        log("si");
-      });
+    Navigator.pop(context);
+    log("------------");
+    log(jsonEncode(response));
+
+    if (!response.error) {
+      ListCardModel listCards = listCardModelFromJson(
+        jsonEncode(response.data),
+      );
+      listCardsAvaliable = listCards.cards;
+      setState(() {});
     }
   }
 
   void deleteCard(String tokenCard) async {
+    showDialog(
+      context: context,
+      builder: (context) => Center(child: CircularProgressIndicator()),
+    );
     final response = await NuveiSdkFlutter().deleteCard(
       tokenCard: tokenCard,
       userId: Constants.userId,
     );
-    if (response is! ErrorResponseModel) {
+    Navigator.pop(context);
+    if (!response.error) {
       showDialog(
         context: context,
         builder:
@@ -60,7 +78,7 @@ class _ListCardsPageState extends State<ListCardsPage> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(response, style: TextStyle(fontSize: 20)),
+                          Text(response.data, style: TextStyle(fontSize: 20)),
                           FilledButtonWidget(
                             text: "Close",
                             onPressed: () async {
@@ -96,14 +114,14 @@ class _ListCardsPageState extends State<ListCardsPage> {
             height: size.height * 0.7,
             // width: size.width * 0.9,
             child: ListView.builder(
-              itemCount: cardModel.length,
+              itemCount: listCardsAvaliable.length,
 
               itemBuilder:
                   (context, index) => Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: InkWell(
                       onTap: () {
-                        CardModel cardModelSelect = cardModel[index];
+                        CardModel cardModelSelect = listCardsAvaliable[index];
                         Navigator.pop(context, cardModelSelect);
                       },
                       child: Card(
@@ -123,13 +141,14 @@ class _ListCardsPageState extends State<ListCardsPage> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      cardModel[index].holderName ?? '',
+                                      listCardsAvaliable[index].holderName ??
+                                          '',
                                       style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
                                     Text(
-                                      "---- ---- ---- ${cardModel[index].number ?? ''}",
+                                      "---- ---- ---- ${listCardsAvaliable[index].number ?? ''}",
                                     ),
                                   ],
                                 ),
@@ -140,7 +159,9 @@ class _ListCardsPageState extends State<ListCardsPage> {
                                   color: Colors.red,
                                 ),
                                 onPressed: () {
-                                  deleteCard(cardModel[index].token ?? '');
+                                  deleteCard(
+                                    listCardsAvaliable[index].token ?? '',
+                                  );
                                 },
                               ),
                             ],
@@ -150,6 +171,10 @@ class _ListCardsPageState extends State<ListCardsPage> {
                     ),
                   ),
             ),
+          ),
+          FilledButtonWidget(
+            text: 'Add a new Card',
+            onPressed: () => Navigator.pushNamed(context, "add_card"),
           ),
         ],
       ),

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
@@ -10,18 +11,20 @@ class GlobalHelper {
   );
 
   String _uniqueToken(String timeStamp, String key) {
-  var uniqueToken = utf8.encode('$key$timeStamp');
-  String uniqueTokenString = sha256.convert(uniqueToken).toString();
-  return uniqueTokenString;
-}
+    var uniqueToken = utf8.encode('$key$timeStamp');
+    String uniqueTokenString = sha256.convert(uniqueToken).toString();
+    return uniqueTokenString;
+  }
 
   String generateToken(String code, String key) {
-  String timeStamp = (DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000).toString();
-  String uniqueToken = _uniqueToken(timeStamp, key);
-  String token = '$code;$timeStamp;$uniqueToken';
-  String tokenFinal = base64Encode(utf8.encode(token));
-  return tokenFinal;
-}
+    String timeStamp =
+        (DateTime.now().toUtc().millisecondsSinceEpoch ~/ 1000).toString();
+    log('Tiempoo $timeStamp');
+    String uniqueToken = _uniqueToken(timeStamp, key);
+    String token = '$code;$timeStamp;$uniqueToken';
+    String tokenFinal = base64Encode(utf8.encode(token));
+    return tokenFinal;
+  }
 
   static bool validateCardNumber(String cardNumber) {
     // Eliminar espacios y guiones

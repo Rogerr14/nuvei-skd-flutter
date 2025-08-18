@@ -7,6 +7,8 @@
 
 import 'package:nuvei_sdk_flutter/env/environment.dart';
 import 'package:nuvei_sdk_flutter/model/card_model.dart';
+import 'package:nuvei_sdk_flutter/model/debit_model.dart';
+import 'package:nuvei_sdk_flutter/model/general_response.dart';
 import 'package:nuvei_sdk_flutter/model/user_model.dart';
 import 'package:nuvei_sdk_flutter/nuvei_sdk_flutter_method_transaction.dart';
 import 'package:nuvei_sdk_flutter/nuvei_sdk_flutter_transaction_interface.dart';
@@ -24,16 +26,36 @@ class NuveiSdkFlutter {
 
   NuveiSdkFlutter._internal();
 
-  Future<dynamic> deleteCard({required String userId, required String tokenCard}) async {
-    return NuveiSdkFlutterTransactionInterface.instance.deleteCard(tokenCard: tokenCard, userId: userId);
+  Future<GeneralResponse> deleteCard({
+    required String userId,
+    required String tokenCard,
+  }) async {
+    return NuveiSdkFlutterTransactionInterface.instance.deleteCard(
+      tokenCard: tokenCard,
+      userId: userId,
+    );
   }
 
-  Future<dynamic> listCards({required String userId}) async {
-    return NuveiSdkFlutterTransactionInterface.instance.listCards(userId: userId);
+  Future<GeneralResponse> listCards({required String userId}) async {
+    return NuveiSdkFlutterTransactionInterface.instance.listCards(
+      userId: userId,
+    );
   }
 
-  Future<dynamic> addCard(CardModel card, UserModel user) async {
+  Future<GeneralResponse> addCard(CardModel card, UserModel user) async {
     return NuveiSdkFlutterTransactionInterface.instance.addCard(card, user);
+  }
+
+  Future<GeneralResponse> debit({
+    required User userInformation,
+    required Order ordeInformation,
+    required CardModel cardInformation,
+  }) async {
+    return NuveiSdkFlutterTransactionInterface.instance.debit(
+      userInformation: userInformation,
+      ordeInformation: ordeInformation,
+      cardInformation: cardInformation,
+    );
   }
 
   void initEnvironment(

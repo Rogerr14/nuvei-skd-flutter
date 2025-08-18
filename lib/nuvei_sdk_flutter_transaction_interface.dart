@@ -1,4 +1,6 @@
 import 'package:nuvei_sdk_flutter/model/card_model.dart';
+import 'package:nuvei_sdk_flutter/model/debit_model.dart';
+import 'package:nuvei_sdk_flutter/model/general_response.dart';
 import 'package:nuvei_sdk_flutter/model/user_model.dart';
 import 'package:nuvei_sdk_flutter/nuvei_sdk_flutter_method_channel.dart';
 import 'package:nuvei_sdk_flutter/nuvei_sdk_flutter_method_transaction.dart';
@@ -15,20 +17,36 @@ abstract class NuveiSdkFlutterTransactionInterface {
     _instance = instance;
   }
 
-   void initEnvironment(String appCode, String appKey, String serverCode, String serverKey, bool testMode){
+  void initEnvironment(
+    String appCode,
+    String appKey,
+    String serverCode,
+    String serverKey,
+    bool testMode,
+  ) {
     throw UnimplementedError('Delete card has not been implemented');
   }
 
-  Future<dynamic> deleteCard({required String userId, required String tokenCard}){
+  Future<GeneralResponse> deleteCard({
+    required String userId,
+    required String tokenCard,
+  }) {
     throw UnimplementedError('Delete card has not been implemented');
-  } 
+  }
 
-  Future<dynamic> listCards({required String userId}){
+  Future<GeneralResponse> debit({
+    required User userInformation,
+    required Order ordeInformation,
+    required CardModel cardInformation,
+  }) async {
+    throw UnimplementedError("Debit card has not been implemented");
+  }
+
+  Future<GeneralResponse> listCards({required String userId}) {
     throw UnimplementedError('Delete card has not been implemented');
   }
 
-  Future<dynamic> addCard(CardModel card, UserModel user){
+  Future<GeneralResponse> addCard(CardModel card, UserModel user) {
     throw UnimplementedError('Delete card has not been implemented');
   }
-  
 }

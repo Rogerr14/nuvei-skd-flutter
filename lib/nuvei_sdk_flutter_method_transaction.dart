@@ -1,10 +1,15 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:http/http.dart';
 import 'package:nuvei_sdk_flutter/env/environment.dart';
 import 'package:nuvei_sdk_flutter/helper/global_helper.dart';
 import 'package:nuvei_sdk_flutter/model/card_model.dart';
+import 'package:nuvei_sdk_flutter/model/debit_model.dart';
 import 'package:nuvei_sdk_flutter/model/error_model.dart';
+import 'package:nuvei_sdk_flutter/model/general_response.dart';
+import 'package:nuvei_sdk_flutter/model/list_card_model.dart';
+import 'package:nuvei_sdk_flutter/model/transaaction_response.dart';
 import 'package:nuvei_sdk_flutter/model/user_model.dart';
 import 'package:nuvei_sdk_flutter/nuvei_sdk_flutter_transaction_interface.dart';
 import 'package:nuvei_sdk_flutter/services/interceptor_http.dart';
@@ -32,7 +37,10 @@ class NuveiSdkFlutterMethodTransaction
   }
 
   @override
-  Future<dynamic> deleteCard({required String userId, required String tokenCard}) async {
+  Future<GeneralResponse> deleteCard({
+    required String userId,
+    required String tokenCard,
+  }) async {
     final urlEndpoint = '/v2/card/delete/';
     try {
       final response = await interceptorHttp.request(
@@ -45,17 +53,18 @@ class NuveiSdkFlutterMethodTransaction
           "user": {"id": userId},
         },
       );
-      if (response is! ErrorResponseModel) {
-        return response["message"];
+      if (!response.error) {
+        String message = response.data["message"];
+        return GeneralResponse(error: false, data: message);
       }
       return response;
     } catch (e) {
-      return "Error on request, try again";
+      return GeneralResponse(error: true);
     }
   }
 
   @override
-  Future<dynamic> listCards({required String userId}) async {
+  Future<GeneralResponse> listCards({required String userId}) async {
     final urlEndpoint = "/v2/card/list";
     try {
       final response = await interceptorHttp.request(
@@ -66,28 +75,23 @@ class NuveiSdkFlutterMethodTransaction
         null,
         queryParameters: {"uid": userId},
       );
-      GlobalHelper.logger.w(response);
-      if (response["error"] != null) {
-        
-        return response;
+      GlobalHelper.logger.w("aqui llego esto : ${jsonEncode(response)}");
+      if (!response.error) {
+        ListCardModel listCards = listCardModelFromJson(
+          jsonEncode(response.data),
+        );
+
+        log(jsonEncode(listCards));
+        return GeneralResponse(error: false, data: listCards);
       }
-      List<CardModel> cards = List<CardModel>.from(
-        response["cards"].map((x) => CardModel.fromJson(x)),
-      );
-      return cards;
+      return response;
     } catch (e) {
-      return ErrorResponseModel(
-        error: Error(
-          type: 'Exception',
-          help: 'Exist an exeption $e',
-          description: "",
-        ),
-      );
+      return GeneralResponse(error: true, data: null);
     }
   }
 
   @override
-  Future<dynamic?> addCard(CardModel card, UserModel user) async {
+  Future<GeneralResponse> addCard(CardModel card, UserModel user) async {
     final urlEndpoint = "/v2/card/add";
     try {
       final response = await interceptorHttp.request(
@@ -97,15 +101,46 @@ class NuveiSdkFlutterMethodTransaction
         env.appKey,
         {"user": user, "card": card, "extra_params": {}, "billing_address": {}},
       );
+
       if (!response.error) {
-        CardModel card = response.data["card"];
-        return card;
+        CardModel card = cardModelFromJson(jsonEncode(response.data));
+        return GeneralResponse(error: false, data: card);
       }
 
-      return null;
+      return response;
     } catch (e) {
-      print('Error to add card;');
-      return null;
+      return GeneralResponse(error: true, data: null);
+    }
+  }
+
+  Future<GeneralResponse> debit({
+    required User userInformation,
+    required Order ordeInformation,
+    required CardModel cardInformation,
+  }) async {
+    final urlEndpoint = '/v2/transaction/debit/';
+    try {
+      CreditCardTransaction transaction = CreditCardTransaction(
+        order: ordeInformation,
+        user: userInformation,
+        card: cardInformation,
+      );
+      final response = await interceptorHttp.request(
+        'POST',
+        urlEndpoint,
+        env.serverCode,
+        env.serverKey,
+        transaction,
+      );
+      if (!response.error) {
+        TransactionResponse data = transactionResponseFromJson(
+          jsonEncode(response.data),
+        );
+        return GeneralResponse(error: false, data: data);
+      }
+      return response;
+    } catch (e) {
+      return GeneralResponse(error: true, data: null);
     }
   }
 }

@@ -11,12 +11,15 @@ dependencies:
   crypto: ^3.0.6
   flutter:
     sdk: flutter
+  flutter_flip_card: ^0.0.6
   flutter_localizations:
     sdk: flutter
   http: ^1.4.0
   intl: any
   logger: ^2.6.1
   plugin_platform_interface: ^2.0.2
+  svg_flutter: ^0.0.1
+  # svg_flutter: ^0.0.1
 
 dev_dependencies:
   flutter_test:
@@ -50,8 +53,8 @@ flutter:
     # -------------------
 
   # To add assets to your plugin package, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
+  assets:
+    - assets/ 
   #   - images/a_dot_ham.jpeg
   #
   # For details regarding assets in packages, see

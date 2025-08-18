@@ -1,7 +1,3 @@
-// To parse this JSON data, do
-//
-//     final cardModel = cardModelFromJson(jsonString);
-
 import 'dart:convert';
 
 CardModel cardModelFromJson(String str) => CardModel.fromJson(json.decode(str));
@@ -9,98 +5,66 @@ CardModel cardModelFromJson(String str) => CardModel.fromJson(json.decode(str));
 String cardModelToJson(CardModel data) => json.encode(data.toJson());
 
 class CardModel {
-    String? number;
-    String? bin;
-    String? type;
-    String? transactionReference;
-    String? status;
-    String? token;
-    dynamic expiryYear;
-    dynamic expiryMonth;
-    String? origin;
-    String? bankName;
-    String? message;
-    String? cvc;
-    String? holderName;
-    String? last4;
+  String? bin;
+  String? status;
+  String? token;
+  String? expiryYear;
+  String? expiryMonth;
+  String? transactionReference;
+  String? type;
+  String? number;
+  String? origin;
+  String? holderName;
+  String? message;
+  String? cvc;
 
-    CardModel({
-         this.number,
-         this.bin,
-         this.type,
-         this.transactionReference,
-         this.status,
-         this.token,
-         this.expiryYear,
-         this.expiryMonth,
-         this.origin,
-         this.bankName,
-         this.message,
-         this.cvc,
-         this.holderName,
-         this.last4,
-    });
+  CardModel({
+    this.bin,
+    this.status,
+    this.token,
+    this.expiryYear,
+    this.expiryMonth,
+    this.transactionReference,
+    this.type,
+    this.number,
+    this.origin,
+    this.holderName,
+    this.message,
+    this.cvc,
+  });
 
-    factory CardModel.fromJson(Map<String, dynamic> json) => CardModel(
-        number: json["number"],
-        bin: json["bin"],
-        type: json["type"],
-        transactionReference: json["transaction_reference"],
-        status: json["status"],
-        token: json["token"],
-        expiryYear: json["expiry_year"],
-        expiryMonth: json["expiry_month"],
-        origin: json["origin"],
-        bankName: json["bank_name"],
-        message: json["message"],
-        cvc: json["cvc"],
-        holderName: json["holder_name"],
-        last4: json["last4"],
+  factory CardModel.fromJson(Map<String, dynamic> json) {
+    return CardModel(
+      bin: json['bin'] as String?,
+      status: json['status'] as String?,
+      token: json['token'] as String?,
+      expiryYear: json['expiry_year'] as String?,
+      expiryMonth: json['expiry_month'] as String?,
+      transactionReference: json['transaction_reference'] as String?,
+      type: json['type'] as String?,
+      number: json['number'] as String?,
+      origin: json['origin'] as String?,
+      holderName: json['holder_name'] as String?,
+      message: json['message'] as String?,
     );
-
-   Map<String, dynamic> toJson() {
-  final Map<String, dynamic> data = {};
-
-  if (number != null) {
-    data['number'] = number;
-  }
-  if (expiryYear != null) {
-    data['expiry_year'] = expiryYear;
-  }
-  if (expiryMonth != null) {
-    data['expiry_month'] = expiryMonth;
-  }
-  if (type != null) {
-    data['type'] = type;
-  }
-  if (last4 != null) {
-    data['last4'] = last4;
-  }
-  if (token != null) {
-    data['token'] = token;
-  }
-  if (bin != null) {
-    data['bin'] = bin;
-  }
-  if (transactionReference != null) {
-    data['transaction_reference'] = transactionReference;
-  }
-  if (status != null) {
-    data['status'] = status;
-  }
-  if (origin != null) {
-    data['origin'] = origin;
-  }
-  if (bankName != null) {
-    data['bank_name'] = bankName;
-  }
-  if (cvc != null) {
-    data['cvc'] = cvc;
-  }
-  if (holderName != null) {
-    data['holder_name'] = holderName;
   }
 
-  return data;
-}
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = {};
+    if (bin != null) data['bin'] = bin;
+    if (status != null) data['status'] = status;
+    if (token != null) data['token'] = token;
+    if (expiryYear != null) data['expires_year'] = expiryYear;
+    if (expiryMonth != null) data['expires_month'] = expiryMonth;
+    if (transactionReference != null) {
+      data['transaction_reference'] = transactionReference;
+    }
+    if (cvc != null) data["cvc"] = cvc;
+    if (type != null) data['type'] = type;
+    if (number != null) data['number'] = number;
+    if (origin != null) data['origin'] = origin;
+    if (holderName != null) data['holder_name'] = holderName;
+    if (message != null) data['message'] = message;
+    return data;
+  }
 }
