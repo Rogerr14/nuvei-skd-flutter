@@ -39,6 +39,7 @@ class TextFormFieldWidget extends StatelessWidget {
       this.fontSize = 17,
       this.borderRadius,
       this.hintColor,
+      this.onTapOutside,
       this.fontFamily, 
       this.borderSide, 
       this.autovalidateMode, this.maxLength});
@@ -62,7 +63,7 @@ class TextFormFieldWidget extends StatelessWidget {
   final Widget? suffixIcon;
   final bool obscureText;
   final Color? fillColor;
-  final Color? colorBorder;
+  final Color colorBorder;
   final FontWeight? fontWeightHintText;
   final int? maxLines;
   final int? maxLength;
@@ -73,6 +74,7 @@ class TextFormFieldWidget extends StatelessWidget {
   final bool? readOnly;
   final String? fontFamily;
   final void Function()? onTap;
+  final void Function()? onTapOutside;
   final void Function(String)? onChanged;
   final String? initialValue;
   final void Function(String)? onFieldSubmitted;
@@ -111,10 +113,13 @@ class TextFormFieldWidget extends StatelessWidget {
       controller: controller,
       onTapOutside: (pointerDownEvent) {
         GlobalHelper.dismissKeyboard(context);
+       if(onTapOutside != null) onTapOutside!();
       },
+      
       textAlign: textAlign,
       keyboardType: keyboardType,
       decoration: InputDecoration(
+        counterText: '',
           errorStyle: TextStyle(
               color: Colors.red,
               // fontSize: responsive.isTablet ? responsive.dp(1.4) : 13
@@ -147,15 +152,15 @@ class TextFormFieldWidget extends StatelessWidget {
               horizontal: horizontalPadding, vertical: verticalPadding),
           constraints: BoxConstraints(maxWidth: maxWidth, maxHeight: maxHeigth),
           border: OutlineInputBorder(
-            borderSide: borderSide ?? BorderSide(width: borderWith!, color:  colorBorder!),
+            borderSide: borderSide ?? BorderSide(width: borderWith!, color:  colorBorder),
             borderRadius: BorderRadius.circular(borderRadius ?? 10),
           ),
           enabledBorder: OutlineInputBorder(
-            borderSide:  borderSide ??BorderSide(width: borderWith!, color: controller!.text.isNotEmpty? Colors.black: colorBorder!),
+            borderSide:  borderSide ??BorderSide(width: borderWith!, color: controller!.text.isNotEmpty? Colors.black: colorBorder),
             borderRadius: BorderRadius.circular(borderRadius ?? 10),
           ),
           focusedBorder: OutlineInputBorder(
-            borderSide:  borderSide ?? BorderSide(width: borderWith!, color: colorBorder!),
+            borderSide:  borderSide ?? BorderSide(width: borderWith!, color: colorBorder),
             borderRadius: BorderRadius.circular(borderRadius ?? 10),
           ),
           errorBorder: OutlineInputBorder(

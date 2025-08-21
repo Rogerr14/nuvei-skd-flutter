@@ -107,76 +107,85 @@ class _ListCardsPageState extends State<ListCardsPage> {
         centerTitle: true,
         title: Image.asset(ThemeConfig().logoImagePath, width: 100),
       ),
-      body: Column(
-        children: [
-          Text("List of Cards"),
-          SizedBox(
-            height: size.height * 0.7,
-            // width: size.width * 0.9,
-            child: ListView.builder(
-              itemCount: listCardsAvaliable.length,
-
-              itemBuilder:
-                  (context, index) => Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: InkWell(
-                      onTap: () {
-                        CardModel cardModelSelect = listCardsAvaliable[index];
-                        Navigator.pop(context, cardModelSelect);
-                      },
-                      child: Card(
-                        child: Padding(
-                          padding: EdgeInsets.all(10),
-                          child: Row(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Image.asset(
-                                  ThemeConfig().logoImagePath,
-                                  width: 50,
+      body: SizedBox(
+        height: size.height,
+        width: size.width,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text("List of Cards"),
+            SizedBox(
+              height: size.height * 0.7,
+              // width: size.width * 0.9,
+              child:( listCardsAvaliable.isEmpty)? 
+              
+                Text('No cards avaliable')
+              : ListView.builder(
+                itemCount: listCardsAvaliable.length,
+        
+                itemBuilder:
+                    (context, index) => Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: InkWell(
+                        onTap: () {
+                          CardModel cardModelSelect = listCardsAvaliable[index];
+                          Navigator.pop(context, cardModelSelect);
+                        },
+                        child: Card(
+                          child: Padding(
+                            padding: EdgeInsets.all(10),
+                            child: Row(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Image.asset(
+                                    ThemeConfig().logoImagePath,
+                                    width: 50,
+                                  ),
                                 ),
-                              ),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      listCardsAvaliable[index].holderName ??
-                                          '',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        listCardsAvaliable[index].holderName ??
+                                            '',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                       ),
-                                    ),
-                                    Text(
-                                      "---- ---- ---- ${listCardsAvaliable[index].number ?? ''}",
-                                    ),
-                                  ],
+                                      Text(
+                                        "---- ---- ---- ${listCardsAvaliable[index].number ?? ''}",
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                              IconButton(
-                                icon: Icon(
-                                  Icons.delete_forever,
-                                  color: Colors.red,
+                                IconButton(
+                                  icon: Icon(
+                                    Icons.delete_forever,
+                                    color: Colors.red,
+                                  ),
+                                  onPressed: () {
+                                    deleteCard(
+                                      listCardsAvaliable[index].token ?? '',
+                                    );
+                                  },
                                 ),
-                                onPressed: () {
-                                  deleteCard(
-                                    listCardsAvaliable[index].token ?? '',
-                                  );
-                                },
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
+              ),
             ),
-          ),
-          FilledButtonWidget(
-            text: 'Add a new Card',
-            onPressed: () => Navigator.pushNamed(context, "add_card"),
-          ),
-        ],
+            FilledButtonWidget(
+              text: 'Add a new Card',
+              onPressed: () => Navigator.pushNamed(context, "add_card"),
+            ),
+          ],
+        ),
       ),
     );
   }

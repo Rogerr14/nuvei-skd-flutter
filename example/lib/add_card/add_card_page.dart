@@ -15,10 +15,12 @@ class _AddCardPageState extends State<AddCardPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
-      body: Column(
-        children: [
-          FormAddCardWidget()
-        ],
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            FormAddCardWidget()
+          ],
+        ),
       ),
     );
   }

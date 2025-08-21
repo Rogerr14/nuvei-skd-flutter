@@ -31,6 +31,7 @@ class _CardWidgetState extends State<CardWidget> {
       child: FlipCard(
         rotateSide: RotateSide.left,
         controller: widget.controllerCard,
+        animationDuration: const Duration(milliseconds: 500),
         frontWidget: Container(
           height: size.height * 0.25,
           width: size.width * 0.9,
@@ -55,6 +56,7 @@ class _CardWidgetState extends State<CardWidget> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           "Card´s holder",
@@ -64,7 +66,7 @@ class _CardWidgetState extends State<CardWidget> {
                           ),
                         ),
                         Text(
-                          widget.holderName,
+                          widget.holderName.trim().isEmpty ? 'JONH DOE' :widget.holderName ,
                           style: TextStyle(fontSize: size.longestSide * 0.02),
                         ),
                       ],
@@ -79,7 +81,7 @@ class _CardWidgetState extends State<CardWidget> {
                           ),
                         ),
                         Text(
-                          widget.expirationDate,
+                          widget.expirationDate.trim().isEmpty ? 'MM/YY':widget.expirationDate,
                           style: TextStyle(fontSize: size.longestSide * 0.02),
                         ),
                       ],

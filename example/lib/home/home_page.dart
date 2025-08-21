@@ -43,12 +43,12 @@ class _HomePageState extends State<HomePage> {
       child: Scaffold(
         appBar: AppBar(
           centerTitle: true,
-          title: Image.asset(ThemeConfig().logoImagePath, width: 100),
+          title: Image.asset(ThemeConfig().logoImagePath, width: size.width * 0.2),
         ),
         body: Padding(
           padding: EdgeInsets.symmetric(
-            vertical: size.height * 0.1,
-            horizontal: 10,
+            vertical: size.height * 0.03,
+           
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -57,34 +57,43 @@ class _HomePageState extends State<HomePage> {
                 width: size.width,
                 child: DataTable(
                   showBottomBorder: true,
-                  columnSpacing: 0,
                   columns: [
-                    DataColumn(label: Container()),
                     DataColumn(label: Text('Quantity')),
                     DataColumn(label: Text('Description')),
                     DataColumn(label: Text('Price')),
                   ],
                   rows: [
                     DataRow(
-                      cells: [
-                        DataCell(Icon(Icons.shopping_bag_rounded)),
-                        DataCell(Text("2")),
+                      cells: [ DataCell(Row(
+                          children: [
+                            Icon(Icons.shopping_bag_rounded),
+                            Text("2"),
+                          ],
+                        )),
                         DataCell(Text("Milk Shake")),
                         DataCell(Text("\$13.90")),
                       ],
                     ),
                     DataRow(
                       cells: [
-                        DataCell(Icon(Icons.shopping_bag_rounded)),
-                        DataCell(Text("2")),
+                        DataCell(Row(
+                          children: [
+                            Icon(Icons.shopping_bag_rounded),
+                            Text("2"),
+                          ],
+                        )),
                         DataCell(Text("Milk Shake")),
                         DataCell(Text("\$13.90")),
                       ],
                     ),
                     DataRow(
                       cells: [
-                        DataCell(Icon(Icons.shopping_bag_rounded)),
-                        DataCell(Text("2")),
+                         DataCell(Row(
+                          children: [
+                            Icon(Icons.shopping_bag_rounded),
+                            Text("2"),
+                          ],
+                        )),
                         DataCell(Text("Milk Shake")),
                         DataCell(Text("\$13.90")),
                       ],
@@ -142,7 +151,7 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                   ),
-                  SizedBox(height: 19),
+                  SizedBox(height: 10),
                   FilledButtonWidget(
                     text: 'Order pay',
                     onPressed: () async {
