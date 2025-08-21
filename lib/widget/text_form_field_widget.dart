@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:nuvei_sdk_flutter/helper/global_helper.dart';
 
 
 class TextFormFieldWidget extends StatelessWidget {
@@ -108,9 +109,9 @@ class TextFormFieldWidget extends StatelessWidget {
       inputFormatters: inputFormatters,
       validator: validator,
       controller: controller,
-      // onTapOutside: (pointerDownEvent) {
-      //   GlobalHelper.dismissKeyboard(context);
-      // },
+      onTapOutside: (pointerDownEvent) {
+        GlobalHelper.dismissKeyboard(context);
+      },
       textAlign: textAlign,
       keyboardType: keyboardType,
       decoration: InputDecoration(
