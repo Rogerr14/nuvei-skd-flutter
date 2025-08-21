@@ -10,12 +10,17 @@ class CardWidget extends StatefulWidget {
   final String cardNumber;
   final String expirationDate;
   final String cvcCode;
+  final String svgCard;
+  final List<Color> gradientCard;
   const CardWidget({
     super.key,
     this.holderName = 'Card´s holder',
     this.cardNumber = '**** **** **** ****',
     this.expirationDate = 'MM/YY',
-    this.cvcCode = 'CVC/CVVC', required this.controllerCard,
+    this.cvcCode = 'CVC/CVVC',
+    required this.controllerCard,
+    required this.svgCard,
+    required this.gradientCard,
   });
 
   @override
@@ -37,9 +42,7 @@ class _CardWidgetState extends State<CardWidget> {
           width: size.width * 0.9,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
-            gradient: LinearGradient(
-              colors: [Colors.blue.shade300, Colors.blue.shade600],
-            ),
+            gradient: LinearGradient(colors: widget.gradientCard),
           ),
           child: Padding(
             padding: const EdgeInsets.all(20),
@@ -48,7 +51,7 @@ class _CardWidgetState extends State<CardWidget> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 SvgPicture.asset(
-                  AppTheme.iconVisaSvg,
+                  widget.svgCard,
                   width: size.width * 0.15,
                   package: 'nuvei_sdk_flutter',
                 ),
@@ -60,14 +63,21 @@ class _CardWidgetState extends State<CardWidget> {
                       children: [
                         Text(
                           "Card´s holder",
+
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            fontSize: size.longestSide * 0.02,
+                            fontSize: size.longestSide * 0.016,
+                            color: Colors.white,
                           ),
                         ),
                         Text(
-                          widget.holderName.trim().isEmpty ? 'JONH DOE' :widget.holderName ,
-                          style: TextStyle(fontSize: size.longestSide * 0.02),
+                          widget.holderName.trim().isEmpty
+                              ? 'JONH DOE'
+                              : widget.holderName,
+                          style: TextStyle(
+                            fontSize: size.longestSide * 0.016,
+                            color: Colors.white,
+                          ),
                         ),
                       ],
                     ),
@@ -77,12 +87,18 @@ class _CardWidgetState extends State<CardWidget> {
                           "Expiration date",
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            fontSize: size.longestSide * 0.02,
+                            fontSize: size.longestSide * 0.016,
+                            color: Colors.white,
                           ),
                         ),
                         Text(
-                          widget.expirationDate.trim().isEmpty ? 'MM/YY':widget.expirationDate,
-                          style: TextStyle(fontSize: size.longestSide * 0.02),
+                          widget.expirationDate.trim().isEmpty
+                              ? 'MM/YY'
+                              : widget.expirationDate,
+                          style: TextStyle(
+                            fontSize: size.longestSide * 0.016,
+                            color: Colors.white,
+                          ),
                         ),
                       ],
                     ),
@@ -97,22 +113,45 @@ class _CardWidgetState extends State<CardWidget> {
           width: size.width * 0.9,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
-            gradient: LinearGradient(
-              colors: [Colors.blue.shade300, Colors.blue.shade600],
-            ),
+            gradient: LinearGradient(colors: widget.gradientCard),
           ),
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                SvgPicture.asset(
-                  AppTheme.iconVisaSvg,
-                  width: size.width * 0.15,
-                  package: 'nuvei_sdk_flutter',
+          child: Align(
+            alignment: Alignment.centerRight,
+            child: Container(
+              width: size.width,
+
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Colors.grey[600]!, Colors.transparent],
                 ),
-              ],
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10.0,
+                  vertical: 2,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'CVV/CVC',
+                      style: TextStyle(
+                        fontSize: size.longestSide * 0.016,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    Text(
+                      widget.cvcCode.trim().isEmpty ? '123' : widget.cvcCode,
+                      style: TextStyle(
+                        fontSize: size.longestSide * 0.016,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
         ),

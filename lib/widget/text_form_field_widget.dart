@@ -42,6 +42,7 @@ class TextFormFieldWidget extends StatelessWidget {
       this.onTapOutside,
       this.fontFamily, 
       this.borderSide, 
+      this.textCapitalization = TextCapitalization.none,
       this.autovalidateMode, this.maxLength});
 
   final double maxHeigth;
@@ -82,6 +83,7 @@ class TextFormFieldWidget extends StatelessWidget {
   final void Function(String?)? onSaved;
   final BorderSide? borderSide;
   final AutovalidateMode? autovalidateMode;
+  final TextCapitalization textCapitalization;
 
   @override
   Widget build(BuildContext context) {
@@ -97,7 +99,6 @@ class TextFormFieldWidget extends StatelessWidget {
       enabled: enabled,
       focusNode: focusNode,
       maxLines: maxLines,
-      
       obscuringCharacter: '*',
       obscureText: obscureText,
       autovalidateMode: autovalidateMode,
@@ -115,7 +116,6 @@ class TextFormFieldWidget extends StatelessWidget {
         GlobalHelper.dismissKeyboard(context);
        if(onTapOutside != null) onTapOutside!();
       },
-      
       textAlign: textAlign,
       keyboardType: keyboardType,
       decoration: InputDecoration(

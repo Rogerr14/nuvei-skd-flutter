@@ -42,9 +42,7 @@ class NuveiSdkFlutter {
     );
   }
 
-  Future<GeneralResponse> addCard(CardModel card, UserModel user) async {
-    return NuveiSdkFlutterTransactionInterface.instance.addCard(card, user);
-  }
+  
 
   Future<GeneralResponse> debit({
     required User userInformation,

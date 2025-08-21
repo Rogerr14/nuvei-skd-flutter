@@ -57,8 +57,8 @@ class _WelcomeExampleState extends State<WelcomeExample> {
             ),
             SizedBox(height: 10,),
             FilledButtonWidget(
-              borderRadius: 20,
-              text: 'Start simulation',
+              borderRadius: 10,
+              text: 'Init simulation',
               fontSize: 20,
               onPressed: () {
                 Navigator.pushReplacementNamed(context, 'home');

@@ -2,6 +2,7 @@
 
 
 
+import 'package:flutter/material.dart';
 import 'package:nuvei_sdk_flutter/env/theme/app_theme.dart';
 
 class CardInfo {
@@ -12,7 +13,7 @@ class CardInfo {
   final List<int> validLengths;
   final String typeCode;
   final String icon;
-  final List<String> gradientColor;
+  final List<Color> gradientColor;
 
   const CardInfo({
     required this.type,
@@ -35,7 +36,7 @@ List<CardInfo> cardTypes = [
     validLengths: [13, 16, 19],
     typeCode: 'vi',
     icon: AppTheme.iconVisaSvg,
-    gradientColor: ['#1a1f71', '#3d5bf6'],
+    gradientColor: [Color(0xFF1a1f71), Color(0xFF3d5bf6)],
   ),
  CardInfo(
     type: 'Mastercard',
@@ -45,7 +46,10 @@ List<CardInfo> cardTypes = [
     validLengths: [16],
     typeCode: 'mc',
     icon:AppTheme.iconMastercardSvg,
-    gradientColor: ['#eb001b', '#f79e1b'],
+    gradientColor: const [
+    Color(0xFFEB001B),
+    Color(0xFFF79E1B),
+  ],
   ),
    CardInfo(
     type: 'American Express',
@@ -55,7 +59,10 @@ List<CardInfo> cardTypes = [
     validLengths: [15],
     typeCode: 'ax',
     icon: AppTheme.iconAmexSvg,
-    gradientColor: ['#2e77bb', '#1e5799'],
+    gradientColor: const [
+    Color(0xFF2E77BB),
+    Color(0xFF1E5799),
+  ],
   ),
   CardInfo(
     type: 'Diners',
@@ -65,7 +72,10 @@ List<CardInfo> cardTypes = [
     validLengths: const [14],
     typeCode: 'di',
     icon:AppTheme.iconDinersvg,
-    gradientColor: const ['#006ba1', '#00b5e2'],
+     gradientColor: const [
+    Color(0xFF006BA1),
+    Color(0xFF00B5E2),
+  ],
   ),
   CardInfo(
     type: 'Discover',
@@ -75,7 +85,10 @@ List<CardInfo> cardTypes = [
     validLengths: const [16, 19],
     typeCode: 'dc',
     icon: AppTheme.iconDiscoverSvg,
-    gradientColor: const ['#ff6f00', '#ff8f00'],
+     gradientColor: const [
+    Color(0xFFFF6F00),
+    Color(0xFFFF8F00),
+  ],
   ),
   CardInfo(
     type: 'Maestro',
@@ -85,7 +98,10 @@ List<CardInfo> cardTypes = [
     validLengths: const [12,13,14,15,16,17,18, 19],
     typeCode: 'mc',
     icon: AppTheme.iconMaestroSvg,
-    gradientColor: const ['#ff6f00', '#ff8f00'],
+    gradientColor: const [
+    Color(0xFFFF6F00),
+    Color(0xFFFF8F00),
+  ],
   ),
   CardInfo(
     type: 'BBVA',
@@ -95,6 +111,9 @@ List<CardInfo> cardTypes = [
     validLengths: const [16, 19],
     typeCode: 'bbva',
     icon: AppTheme.iconUnknowCard ,    
-    gradientColor: const ['#ff6f00', '#ff8f00'],
+    gradientColor: const [
+    Color(0xFF0033A0),
+    Color(0xFF1A73E8),
+  ],
   ),
 ];

@@ -28,6 +28,7 @@ class FormAddCardWidget extends StatefulWidget {
 }
 
 class _FormAddCardWidgetState extends State<FormAddCardWidget> {
+  final _keyForm =  GlobalKey<FormState>();
   final TextEditingController _numberCardController = TextEditingController();
   final TextEditingController _holdenNameController = TextEditingController();
   final TextEditingController _expireDateController = TextEditingController();
@@ -63,65 +64,133 @@ class _FormAddCardWidgetState extends State<FormAddCardWidget> {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      child: Column(
-        children: [
-          CardWidget(
-            controllerCard: controller,
-            holderName: _holdenNameController.text,
-            cardNumber: _numberCardController.text,
-            cvcCode: _cvcCodeController.text,
-            expirationDate: _expireDateController.text,
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextFormFieldWidget(
-              controller: _holdenNameController,
-              hintText: 'Holder´s Name',
+      child: Form(
+        key: _keyForm,
+        child: Column(
+          children: [
+            CardWidget(
+              svgCard: CardHelper().getCardInfo(_numberCardController.text).icon,
+              gradientCard: CardHelper().getCardInfo(_numberCardController.text).gradientColor,
+              controllerCard: controller,
+              holderName: _holdenNameController.text,
+              cardNumber: _numberCardController.text,
+              cvcCode: _cvcCodeController.text,
+              expirationDate: _expireDateController.text,
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextFormFieldWidget(
-              colorBorder: widget.borderColor ?? Colors.black,
-              controller: _numberCardController,
-              hintText: 'Number Card',
-              inputFormatters: [FilteringTextInputFormatter.digitsOnly,],
-              onChanged: (value) {
-                _numberCardController.text = CardHelper().applyMask(value);
-                setState(() {});
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextFormFieldWidget(
+                controller: _holdenNameController,
+                hintText: 'Holder´s Name',
+                maxLength: 20,
+                autovalidateMode: AutovalidateMode.onUnfocus,
+                inputFormatters: [
+                   FilteringTextInputFormatter.allow(RegExp(r'[A-Z ]')),
+                ],
+                validator: (value){
+                  if(value == null || value.trim().isEmpty){
+                    return 'Holder name is not valid';
+                  }
+                  return null;
+                },
+                onChanged: (v){
+                  // _holdenNameController.text = v.toUpperCase();
+                  setState(() {
+                    
+                  });
+                },
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextFormFieldWidget(
+                colorBorder: widget.borderColor ?? Colors.black,
+                controller: _numberCardController,
+                keyboardType: TextInputType.numberWithOptions(),
 
-              },
+                autovalidateMode: AutovalidateMode.onUnfocus,
+                hintText: 'Number Card',
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                validator: (value) {
+                  if(value == null || value.trim().isEmpty || !CardHelper().getCardInfo(_numberCardController.text).validLengths.contains(value.trim().length)){
+                    return 'Card number is not valid';
+                  }
+                  if(!CardHelper.validateCardNumber(value)){
+                    return 'Card number is not valid';
+                  }
+
+                  return null;
+                },
+                onChanged: (value) {
+                  _numberCardController.text = CardHelper().applyMask(value);
+                  setState(() {});
+                },
+              ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextFormFieldWidget(
-                    controller: _expireDateController,
-                    hintText: 'MM/YY',
-                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextFormFieldWidget(
+
+                autovalidateMode: AutovalidateMode.onUnfocus,
+                      controller: _expireDateController,
+                      hintText: 'MM/YY',
+                      keyboardType: TextInputType.numberWithOptions(),
+                      validator: (value) => CardHelper().validateExpiryDate(value),
+                      onChanged: (value) {
+                        _expireDateController.text = CardHelper().formatExpiry(value);
+                        setState(() {
+                          
+                        });
+                      },
+                      maxLength: 5,
+                    ),
                   ),
-                ),
-                SizedBox(width: 10),
-                Expanded(
-                  child: TextFormFieldWidget(
-                    controller: _cvcCodeController,
-                    hintText: 'CVV/CVC',
-                    focusNode: _cvcFocus,
-                    maxLength: CardHelper().getCardInfo(_numberCardController.text).cvcNumber,
-                    onTapOutside: () {
-                      _cvcFlipCard();
-                    },
-                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  SizedBox(width: 10),
+                  Expanded(
+                    child: TextFormFieldWidget(
+                      controller: _cvcCodeController,
+                      hintText: 'CVV/CVC',
+                      onChanged: (va){
+                        setState(() {
+                          
+                        });
+                      },
+                autovalidateMode: AutovalidateMode.onUnfocus,
+                      focusNode: _cvcFocus,
+                      keyboardType: TextInputType.numberWithOptions(),
+                      maxLength:
+                          CardHelper()
+                              .getCardInfo(_numberCardController.text)
+                              .cvcNumber,
+                      
+                      validator: (value){
+                        if(value == null || value.trim().isEmpty || CardHelper()
+                              .getCardInfo(_numberCardController.text)
+                              .cvcNumber != _cvcCodeController.text.length){
+                          return 'CVC is not valid';
+                        }
+                        return null;
+                      },
+                      onTapOutside: () {
+                        _cvcFlipCard();
+                      },
+                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          FilledButtonWidget(text: 'Add Card')
-        ],
+            SizedBox(height: 20),
+            FilledButtonWidget(text: 'Add Card', onPressed: (){
+              if(_keyForm.currentState!.validate()){
+
+              }
+            },),
+          ],
+        ),
       ),
     );
   }
