@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:nuvei_sdk_flutter/model/card_model.dart';
+import 'package:nuvei_sdk_flutter/model/add_card_model/card_model.dart';
 import 'package:nuvei_sdk_flutter/model/transaction_model.dart';
 
 TransactionResponse transactionResponseFromJson(String str) => TransactionResponse.fromJson(json.decode(str));

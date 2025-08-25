@@ -8,8 +8,8 @@ class CardModel {
   String? bin;
   String? status;
   String? token;
-  String? expiryYear;
-  String? expiryMonth;
+  int? expiryYear;
+  int? expiryMonth;
   String? transactionReference;
   String? type;
   String? number;
@@ -38,8 +38,8 @@ class CardModel {
       bin: json['bin'] as String?,
       status: json['status'] as String?,
       token: json['token'] as String?,
-      expiryYear: json['expiry_year'] as String?,
-      expiryMonth: json['expiry_month'] as String?,
+      expiryYear: json['expiry_year'] as int?,
+      expiryMonth: json['expiry_month'] as int?,
       transactionReference: json['transaction_reference'] as String?,
       type: json['type'] as String?,
       number: json['number'] as String?,

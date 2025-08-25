@@ -4,12 +4,15 @@
 
 import 'dart:convert';
 
+import 'package:nuvei_sdk_flutter/model/order_model.dart';
+import 'package:nuvei_sdk_flutter/model/transaction_model.dart';
+
 RefundModel refundModelFromJson(String str) => RefundModel.fromJson(json.decode(str));
 
 String refundModelToJson(RefundModel data) => json.encode(data.toJson());
 
 class RefundModel {
-    Transaction transaction;
+    TransactionModel transaction;
     Order? order;
     bool? moreInfo;
 
@@ -20,7 +23,7 @@ class RefundModel {
     });
 
     factory RefundModel.fromJson(Map<String, dynamic> json) => RefundModel(
-        transaction: Transaction.fromJson(json["transaction"]),
+        transaction: TransactionModel.fromJson(json["transaction"]),
         order: Order.fromJson(json["order"]),
         moreInfo: json["more_info"],
     );
@@ -32,38 +35,5 @@ class RefundModel {
     };
 }
 
-class Order {
-    int? amount;
 
-    Order({
-         this.amount,
-    });
 
-    factory Order.fromJson(Map<String, dynamic> json) => Order(
-        amount: json["amount"],
-    );
-
-    Map<String, dynamic> toJson() => {
-        "amount": amount,
-    };
-}
-
-class Transaction {
-    String id;
-    double? referenceLabel;
-
-    Transaction({
-         this.id = '',
-         this.referenceLabel,
-    });
-
-    factory Transaction.fromJson(Map<String, dynamic> json) => Transaction(
-        id: json["id"],
-        referenceLabel: json["reference_label"]?.toDouble(),
-    );
-
-    Map<String, dynamic> toJson() => {
-        "id": id,
-        "reference_label": referenceLabel,
-    };
-}

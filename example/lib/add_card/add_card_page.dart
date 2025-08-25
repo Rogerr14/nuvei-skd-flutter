@@ -18,7 +18,20 @@ class _AddCardPageState extends State<AddCardPage> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            FormAddCardWidget()
+            FormAddCardWidget(
+              email: 'erick.guillen@nuvei.com',
+              userId: '4',
+              onLoading: (value){
+                if(value){
+ showDialog(
+      context: context,
+      builder: (context) => Center(child: CircularProgressIndicator()),
+    );
+                }else{
+                  Navigator.pop(context);
+                }
+              },
+            )
           ],
         ),
       ),

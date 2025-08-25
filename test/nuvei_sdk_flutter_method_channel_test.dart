@@ -1,11 +1,10 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:nuvei_sdk_flutter/nuvei_sdk_flutter_method_channel.dart';
+
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  MethodChannelNuveiSdkFlutter platform = MethodChannelNuveiSdkFlutter();
   const MethodChannel channel = MethodChannel('nuvei_sdk_flutter');
 
   setUp(() {
@@ -22,6 +21,5 @@ void main() {
   });
 
   test('getPlatformVersion', () async {
-    expect(await platform.getPlatformVersion(), '42');
   });
 }

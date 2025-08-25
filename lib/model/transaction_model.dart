@@ -6,6 +6,7 @@ String transactionModelToJson(TransactionModel data) => json.encode(data.toJson(
 
 class TransactionModel {
   String? id;
+  String? referenceLabel;
   String? status;
   String? currentStatus;
   int? statusDetail;
@@ -24,6 +25,7 @@ class TransactionModel {
 
   TransactionModel({
     this.id,
+    this.referenceLabel,
     this.status,
     this.currentStatus,
     this.statusDetail,
@@ -45,6 +47,7 @@ class TransactionModel {
     return TransactionModel(
       id: json['id'] as String?,
       status: json['status'] as String?,
+      referenceLabel: json['reference_label'] as String?,
       currentStatus: json['current_status'] as String?,
       statusDetail: json['status_detail'] as int?,
       paymentDate: json['payment_date'] as String?,
@@ -66,6 +69,7 @@ class TransactionModel {
     final Map<String, dynamic> data = {};
     if (id != null) data['id'] = id;
     if (status != null) data['status'] = status;
+    if  (referenceLabel != null) data['reference_label'] =  referenceLabel;
     if (currentStatus != null) data['current_status'] = currentStatus;
     if (statusDetail != null) data['status_detail'] = statusDetail;
     if (paymentDate != null) data['payment_date'] = paymentDate;

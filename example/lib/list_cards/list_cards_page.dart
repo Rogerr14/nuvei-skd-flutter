@@ -2,9 +2,10 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:nuvei_sdk_flutter/model/card_model.dart';
+import 'package:nuvei_sdk_flutter/model/add_card_model/card_model.dart';
 import 'package:nuvei_sdk_flutter/model/error_model.dart';
-import 'package:nuvei_sdk_flutter/model/list_card_model.dart';
+import 'package:nuvei_sdk_flutter/model/list_card_model/card_item_model.dart';
+import 'package:nuvei_sdk_flutter/model/list_card_model/list_card_model.dart';
 import 'package:nuvei_sdk_flutter/nuvei_sdk_flutter.dart';
 import 'package:nuvei_sdk_flutter/widget/filled_button_widget.dart';
 import 'package:nuvei_sdk_flutter_example/add_card/add_card_page.dart';
@@ -20,11 +21,10 @@ class ListCardsPage extends StatefulWidget {
 }
 
 class _ListCardsPageState extends State<ListCardsPage> {
-  List<CardModel> listCardsAvaliable = [];
+  List<CardItemModel> listCardsAvaliable = [];
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
 
@@ -129,7 +129,7 @@ class _ListCardsPageState extends State<ListCardsPage> {
                       padding: const EdgeInsets.all(8.0),
                       child: InkWell(
                         onTap: () {
-                          CardModel cardModelSelect = listCardsAvaliable[index];
+                          CardItemModel cardModelSelect = listCardsAvaliable[index];
                           Navigator.pop(context, cardModelSelect);
                         },
                         child: Card(

@@ -1,8 +1,10 @@
-import 'package:nuvei_sdk_flutter/model/card_model.dart';
-import 'package:nuvei_sdk_flutter/model/debit_model.dart';
+import 'package:flutter/material.dart';
+import 'package:nuvei_sdk_flutter/model/add_card_model/card_model.dart';
+import 'package:nuvei_sdk_flutter/model/order_model.dart';
+import 'package:nuvei_sdk_flutter/model/payment_model/debit_model.dart';
 import 'package:nuvei_sdk_flutter/model/general_response.dart';
+import 'package:nuvei_sdk_flutter/model/transaction_model.dart';
 import 'package:nuvei_sdk_flutter/model/user_model.dart';
-import 'package:nuvei_sdk_flutter/nuvei_sdk_flutter_method_channel.dart';
 import 'package:nuvei_sdk_flutter/nuvei_sdk_flutter_method_transaction.dart';
 
 abstract class NuveiSdkFlutterTransactionInterface {
@@ -46,7 +48,11 @@ abstract class NuveiSdkFlutterTransactionInterface {
     throw UnimplementedError('Delete card has not been implemented');
   }
 
-  Future<GeneralResponse> addCard(CardModel card, UserModel user) {
+  Future<GeneralResponse> addCard(CardModel card, UserModel user, BuildContext context) {
+    throw UnimplementedError('Delete card has not been implemented');
+  }
+
+  Future<GeneralResponse> refund({required TransactionModel transaction, Order? order, bool moreInfo  = true}){
     throw UnimplementedError('Delete card has not been implemented');
   }
 }

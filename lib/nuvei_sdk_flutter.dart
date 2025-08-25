@@ -5,21 +5,14 @@
 // platforms in the `pubspec.yaml` at
 // https://flutter.dev/to/pubspec-plugin-platforms.
 
-import 'package:nuvei_sdk_flutter/env/environment.dart';
-import 'package:nuvei_sdk_flutter/model/card_model.dart';
-import 'package:nuvei_sdk_flutter/model/debit_model.dart';
+import 'package:nuvei_sdk_flutter/model/add_card_model/card_model.dart';
+import 'package:nuvei_sdk_flutter/model/order_model.dart';
+import 'package:nuvei_sdk_flutter/model/payment_model/debit_model.dart';
 import 'package:nuvei_sdk_flutter/model/general_response.dart';
-import 'package:nuvei_sdk_flutter/model/user_model.dart';
-import 'package:nuvei_sdk_flutter/nuvei_sdk_flutter_method_transaction.dart';
+import 'package:nuvei_sdk_flutter/model/transaction_model.dart';
 import 'package:nuvei_sdk_flutter/nuvei_sdk_flutter_transaction_interface.dart';
 
-import 'nuvei_sdk_flutter_platform_interface.dart';
-
 class NuveiSdkFlutter {
-  Future<String?> getPlatformVersion() {
-    return NuveiSdkFlutterPlatform.instance.getPlatformVersion();
-  }
-
   static final NuveiSdkFlutter _nuveiSdkFlutter = NuveiSdkFlutter._internal();
 
   factory NuveiSdkFlutter() => _nuveiSdkFlutter;
@@ -42,8 +35,6 @@ class NuveiSdkFlutter {
     );
   }
 
-  
-
   Future<GeneralResponse> debit({
     required User userInformation,
     required Order ordeInformation,
@@ -53,6 +44,18 @@ class NuveiSdkFlutter {
       userInformation: userInformation,
       ordeInformation: ordeInformation,
       cardInformation: cardInformation,
+    );
+  }
+
+  Future<GeneralResponse> refund({
+    required TransactionModel transaction,
+    Order? order,
+    bool moreInfo = true,
+  }) async {
+    return NuveiSdkFlutterTransactionInterface.instance.refund(
+      transaction: transaction,
+      order: order,
+      moreInfo: moreInfo,
     );
   }
 

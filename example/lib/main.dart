@@ -59,7 +59,7 @@ class _WelcomeExampleState extends State<WelcomeExample> {
             FilledButtonWidget(
               borderRadius: 10,
               text: 'Init simulation',
-              fontSize: 20,
+              fontSize: 16,
               onPressed: () {
                 Navigator.pushReplacementNamed(context, 'home');
               },

@@ -15,7 +15,7 @@ class CardWidget extends StatefulWidget {
   const CardWidget({
     super.key,
     this.holderName = 'Card´s holder',
-    this.cardNumber = '**** **** **** ****',
+    this.cardNumber = '*************** ',
     this.expirationDate = 'MM/YY',
     this.cvcCode = 'CVC/CVVC',
     required this.controllerCard,
@@ -55,6 +55,18 @@ class _CardWidgetState extends State<CardWidget> {
                   width: size.width * 0.15,
                   package: 'nuvei_sdk_flutter',
                 ),
+                 Align(
+                  alignment: Alignment.center,
+                   child: Text(
+                            widget.cardNumber.trim().isNotEmpty ? widget.cardNumber : '**** **** **** ****',
+                   
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: size.longestSide * 0.021,
+                              color: Colors.white,
+                            ),
+                          ),
+                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [

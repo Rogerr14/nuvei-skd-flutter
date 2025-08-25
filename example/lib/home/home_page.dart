@@ -3,8 +3,9 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:nuvei_sdk_flutter/helper/global_helper.dart';
-import 'package:nuvei_sdk_flutter/model/card_model.dart';
-import 'package:nuvei_sdk_flutter/model/debit_model.dart';
+import 'package:nuvei_sdk_flutter/model/add_card_model/card_model.dart';
+import 'package:nuvei_sdk_flutter/model/order_model.dart';
+import 'package:nuvei_sdk_flutter/model/payment_model/debit_model.dart';
 import 'package:nuvei_sdk_flutter/nuvei_sdk_flutter.dart';
 import 'package:nuvei_sdk_flutter/widget/filled_button_widget.dart';
 import 'package:nuvei_sdk_flutter_example/constanst/constants.dart';

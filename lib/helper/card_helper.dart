@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nuvei_sdk_flutter/env/theme/app_theme.dart';
-import 'package:nuvei_sdk_flutter/model/card_info_model.dart';
+import 'package:nuvei_sdk_flutter/model/add_card_model/card_info_model.dart';
 
 class CardHelper {
   String applyMask(String numberCard) {

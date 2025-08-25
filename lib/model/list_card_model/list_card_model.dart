@@ -4,7 +4,8 @@
 
 import 'dart:convert';
 
-import 'package:nuvei_sdk_flutter/model/card_model.dart';
+import 'package:nuvei_sdk_flutter/model/add_card_model/card_model.dart';
+import 'package:nuvei_sdk_flutter/model/list_card_model/card_item_model.dart';
 
 ListCardModel listCardModelFromJson(String str) => ListCardModel.fromJson(json.decode(str));
 
@@ -12,7 +13,7 @@ String listCardModelToJson(ListCardModel data) => json.encode(data.toJson());
 
 class ListCardModel {
     int resultSize;
-    List<CardModel> cards;
+    List<CardItemModel> cards;
 
     ListCardModel({
         required this.resultSize,
@@ -21,7 +22,7 @@ class ListCardModel {
 
     factory ListCardModel.fromJson(Map<String, dynamic> json) => ListCardModel(
         resultSize: json["result_size"],
-        cards: List<CardModel>.from(json["cards"].map((x) => CardModel.fromJson(x))),
+        cards: List<CardItemModel>.from(json["cards"].map((x) => CardItemModel.fromJson(x))),
     );
 
     Map<String, dynamic> toJson() => {
