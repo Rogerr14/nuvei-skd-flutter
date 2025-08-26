@@ -59,7 +59,7 @@ class UserModel {
   );
 
   Map<String, dynamic> toJson() {
-    Map<String, dynamic> data = {"id": id, "email": email};
+    Map<String, dynamic> data = {"email": email, "id": id};
     if (ipAddress != null) data["ip_address"] = ipAddress;
     if (ipAddress != null) data["phone"] = phone;
     if (firstName != null) data["first_name"] = firstName;

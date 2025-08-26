@@ -20,6 +20,7 @@ dependencies:
   logger: ^2.6.1
   plugin_platform_interface: ^2.0.2
   svg_flutter: ^0.0.1
+  webview_flutter: ^4.13.0
   # svg_flutter: ^0.0.1
 
 dev_dependencies:

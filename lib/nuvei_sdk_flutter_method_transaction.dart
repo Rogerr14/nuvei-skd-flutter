@@ -1,11 +1,13 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:nuvei_sdk_flutter/env/environment.dart';
 import 'package:nuvei_sdk_flutter/helper/global_helper.dart';
 import 'package:nuvei_sdk_flutter/model/add_card_model/card_model.dart';
+import 'package:nuvei_sdk_flutter/model/add_card_model/card_response_model.dart';
 import 'package:nuvei_sdk_flutter/model/add_card_model/extra_params_model.dart';
 import 'package:nuvei_sdk_flutter/model/list_card_model/card_item_model.dart';
 import 'package:nuvei_sdk_flutter/model/order_model.dart';
@@ -18,6 +20,7 @@ import 'package:nuvei_sdk_flutter/model/refund_payment_model/refund_response_mod
 import 'package:nuvei_sdk_flutter/model/transaaction_response.dart';
 import 'package:nuvei_sdk_flutter/model/transaction_model.dart';
 import 'package:nuvei_sdk_flutter/model/user_model.dart';
+import 'package:nuvei_sdk_flutter/model/verify_model/otp_request_model.dart';
 import 'package:nuvei_sdk_flutter/nuvei_sdk_flutter_transaction_interface.dart';
 import 'package:nuvei_sdk_flutter/services/interceptor_http.dart';
 
@@ -62,11 +65,17 @@ class NuveiSdkFlutterMethodTransaction
       );
       if (!response.error) {
         String message = response.data["message"];
-        return GeneralResponse(error: false, data: message);
+        return GeneralResponse(error: response.error, data: message);
       }
-      return response;
-    } catch (e) {
+
       return GeneralResponse(error: true);
+    } catch (e) {
+      return GeneralResponse(
+        error: true,
+        data: ErrorResponseModel(
+          error: Error(type: 'Exception', help: '', description: '$e'),
+        ),
+      );
     }
   }
 
@@ -88,7 +97,6 @@ class NuveiSdkFlutterMethodTransaction
           jsonEncode(response.data),
         );
 
-        log(jsonEncode(listCards));
         return GeneralResponse(error: false, data: listCards);
       }
       return response;
@@ -98,44 +106,48 @@ class NuveiSdkFlutterMethodTransaction
   }
 
   @override
-  Future<GeneralResponse> addCard(CardModel card, UserModel user, BuildContext context) async {
+  Future<GeneralResponse> addCard(
+    CardModel card,
+    UserModel user,
+    BuildContext context,
+  ) async {
     final urlEndpoint = "/v2/card/add";
     try {
+      GlobalHelper.logger.w('entry in this point');
 
       final extraParams = ExtraParamsModel(
-
-        
+        threeDs2Data: ThreeDs2Data(
+          termUrl: 'https://lantechco.ec/img/callback3DS.php',
+          deviceType: 'browser',
+        ),
+        browserInfo: await GlobalHelper().getBrowserInfo(context),
       );
 
-      GlobalHelper().getBrowserInfo(context);
-
-
-
-      final data = {
-          "user": user,
-           "card": card, 
-          "extra_params" : ''
-      };
-
-
-
+      final data = {"user": user, "card": card, "extra_params": extraParams};
 
       final response = await interceptorHttp.request(
         'POST',
         urlEndpoint,
         env.appCode,
         env.appKey,
-        {"extra_params": {},},
+        data,
       );
 
       if (!response.error) {
-        CardItemModel card = cardItemModelFromJson(jsonEncode(response.data));
-        return GeneralResponse(error: false, data: card);
+        CardResponseModel cardResponse = cardResponseModelFromJson(
+          jsonEncode(response.data),
+        );
+        return GeneralResponse(error: false, data: cardResponse);
       }
-
-      return response;
-    } catch (e) {
       return GeneralResponse(error: true, data: null);
+    } catch (e) {
+      GlobalHelper.logger.e('ERROOOR: $e');
+       return GeneralResponse(
+        error: true,
+        data: ErrorResponseModel(
+          error: Error(type: 'Exception', help: '', description: '$e'),
+        ),
+      );
     }
   }
 
@@ -167,7 +179,12 @@ class NuveiSdkFlutterMethodTransaction
       }
       return response;
     } catch (e) {
-      return GeneralResponse(error: true, data: null);
+       return GeneralResponse(
+        error: true,
+        data: ErrorResponseModel(
+          error: Error(type: 'Exception', help: '', description: '$e'),
+        ),
+      );
     }
   }
 
@@ -191,16 +208,45 @@ class NuveiSdkFlutterMethodTransaction
         env.serverKey,
         refundBody,
       );
- if (!response.error) {
+      if (!response.error) {
         RefundResponseModel data = refundResponseModelFromJson(
           jsonEncode(response.data),
         );
         return GeneralResponse(error: false, data: data);
       }
       return response;
-
     } catch (e) {
-      return GeneralResponse(error: true, data: null);
+       return GeneralResponse(
+        error: true,
+        data: ErrorResponseModel(
+          error: Error(type: 'Exception', help: '', description: '$e'),
+        ),
+      );
+    }
+  }
+
+
+  @override
+  Future<GeneralResponse> verify(OtpRequest otpRequest) async {
+
+    try {
+    final urlEndPoint = '/v2/transaction/verify';
+    final response = await interceptorHttp.request(
+      'POST',
+      urlEndPoint,
+      env.serverCode,
+      env.serverKey,
+      otpRequest,
+    );
+      
+      return response;
+    } catch (e) {
+       return GeneralResponse(
+        error: true,
+        data: ErrorResponseModel(
+          error: Error(type: 'Exception', help: '', description: '$e'),
+        ),
+      );
     }
   }
 }

@@ -5,6 +5,7 @@ import 'package:nuvei_sdk_flutter/model/payment_model/debit_model.dart';
 import 'package:nuvei_sdk_flutter/model/general_response.dart';
 import 'package:nuvei_sdk_flutter/model/transaction_model.dart';
 import 'package:nuvei_sdk_flutter/model/user_model.dart';
+import 'package:nuvei_sdk_flutter/model/verify_model/otp_request_model.dart';
 import 'package:nuvei_sdk_flutter/nuvei_sdk_flutter_method_transaction.dart';
 
 abstract class NuveiSdkFlutterTransactionInterface {
@@ -55,4 +56,10 @@ abstract class NuveiSdkFlutterTransactionInterface {
   Future<GeneralResponse> refund({required TransactionModel transaction, Order? order, bool moreInfo  = true}){
     throw UnimplementedError('Delete card has not been implemented');
   }
+
+  Future<GeneralResponse> verify(OtpRequest otpRequest)async{
+    throw UnimplementedError('Delete card has not been implemented');
+  }
+
 }
+

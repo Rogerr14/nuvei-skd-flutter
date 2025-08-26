@@ -6,7 +6,12 @@ import 'package:flutter_flip_card/controllers/flip_card_controllers.dart';
 import 'package:nuvei_sdk_flutter/helper/card_helper.dart';
 import 'package:nuvei_sdk_flutter/helper/global_helper.dart';
 import 'package:nuvei_sdk_flutter/model/add_card_model/card_model.dart';
+import 'package:nuvei_sdk_flutter/model/add_card_model/card_response_model.dart';
+import 'package:nuvei_sdk_flutter/model/error_model.dart';
+import 'package:nuvei_sdk_flutter/model/general_response.dart';
 import 'package:nuvei_sdk_flutter/model/user_model.dart';
+import 'package:nuvei_sdk_flutter/model/verify_model/otp_request_model.dart';
+import 'package:nuvei_sdk_flutter/model/verify_model/otp_response_model.dart';
 import 'package:nuvei_sdk_flutter/nuvei_sdk_flutter.dart';
 import 'package:nuvei_sdk_flutter/nuvei_sdk_flutter_transaction_interface.dart';
 import 'package:nuvei_sdk_flutter/widget/card_widget.dart';
@@ -23,8 +28,10 @@ class FormAddCardWidget extends StatefulWidget {
     this.backgroundInputColor,
     required this.email,
     required this.userId,
-    required this.onLoading  
-    });
+    required this.onLoading,
+    required this.onErrorProcess,
+    required this.onSuccesProcess,
+  });
 
   final bool showBorderInput;
   final Color? borderColor;
@@ -34,6 +41,8 @@ class FormAddCardWidget extends StatefulWidget {
   final String userId;
   final String email;
   final Function(bool value) onLoading;
+  final void Function(bool approved) onSuccesProcess;
+  final void Function(ErrorResponseModel error) onErrorProcess;
 
   @override
   State<FormAddCardWidget> createState() => _FormAddCardWidgetState();
@@ -46,10 +55,14 @@ class _FormAddCardWidgetState extends State<FormAddCardWidget> {
   final TextEditingController _holdenNameController = TextEditingController();
   final TextEditingController _expireDateController = TextEditingController();
   final TextEditingController _cvcCodeController = TextEditingController();
+  final TextEditingController _otpCodeController = TextEditingController();
 
   bool _flipped = false;
   final controller = FlipCardController();
   final _cvcFocus = FocusNode();
+  String _transactionId = '';
+  bool _activateOtp = false;
+  bool _isOtpValid = true;
 
   void _cvcFlipCard() async {
     GlobalHelper.logger.i('focus ${(_cvcFocus.hasFocus && !_flipped)}');
@@ -74,26 +87,225 @@ class _FormAddCardWidgetState extends State<FormAddCardWidget> {
     super.initState();
   }
 
-
-
-  _addCardProcess()async{
+  _addCardProcess() async {
     widget.onLoading(true);
-    final expiryDate =  _expireDateController.text.split('/');
+    final expiryDate = _expireDateController.text.split('/');
     final expiryMonth = expiryDate[0];
     final expiryYear = expiryDate[1];
 
     final cleanNumber = _numberCardController.text.trim().replaceAll(' ', '');
-    final bodyAddCard =  CardModel(
+    final bodyAddCard = CardModel(
       number: cleanNumber,
       holderName: _holdenNameController.text.toUpperCase(),
       cvc: _cvcCodeController.text,
       expiryMonth: int.parse(expiryMonth),
-      expiryYear: int.parse(expiryYear),
+      expiryYear: GlobalHelper().completeYear(int.parse(expiryYear)),
+      type: CardHelper().getCardInfo(_numberCardController.text).typeCode,
     );
     final useInfo = UserModel(id: widget.userId, email: widget.email);
-    final response = await NuveiSdkFlutterTransactionInterface.instance.addCard(bodyAddCard, useInfo, context);
-    GlobalHelper.logger.w(jsonEncode(response));
-    widget.onLoading(false);
+    final response = await NuveiSdkFlutterTransactionInterface.instance.addCard(
+      bodyAddCard,
+      useInfo,
+      context,
+    );
+    if (!response.error) {
+      GlobalHelper.logger.i(jsonEncode(response.data));
+      CardResponseModel cardResponseModel = cardResponseModelFromJson(
+        jsonEncode(response.data),
+      );
+      switch (cardResponseModel.card.status) {
+        case 'valid':
+          _clearAllForms();
+          widget.onSuccesProcess(true);
+          widget.onLoading(false);
+        case 'pending':
+          _activateOtp = true;
+          _transactionId = cardResponseModel.card.transactionReference;
+          widget.onLoading(false);
+          setState(() {});
+          break;
+        case 'review':
+          _verifyBy3ds(cardResponseModel.the3Ds!.browserResponse);
+          break;
+        case 'rejected':
+          widget.onSuccesProcess(false);
+          _clearAllForms();
+          break;
+        default:
+          widget.onErrorProcess(
+            ErrorResponseModel(
+              error: Error(
+                type: 'Error en request',
+                help: '',
+                description: 'Error in add card request',
+              ),
+            ),
+          );
+      }
+    } else {
+      widget.onLoading(false);
+      ErrorResponseModel error = errorResponseModelFromJson(
+        jsonEncode(response.data),
+      );
+      widget.onErrorProcess(error);
+    }
+  }
+
+
+  _verifyByCress()async{
+    widget.onLoading(true);
+    try {
+    final response = await NuveiSdkFlutterTransactionInterface.instance.verify(OtpRequest(
+                user: OtpUser(id: widget.userId),
+                transaction: OtpTransaction(id: _transactionId),
+                moreInfo: true,
+                value: 'U3VjY2VzcyBBdXRoZW50aWNhdGlvbg',
+                type: 'BY_CRES',
+              ),);
+        widget.onLoading(false);
+      if(!response.error){
+          
+      }
+    } catch (e) {
+       widget.onLoading(false);
+        return GeneralResponse(
+          error: true,
+          data: ErrorResponseModel(
+            error: Error(type: 'Exception', help: '', description: '$e'),
+          ),
+        );
+    }
+
+  }
+
+
+
+  _verifyBy3ds(BrowserResponse browserResponse) async {
+    if (browserResponse.challengeRequest.isNotEmpty) {
+      widget.onLoading(false);
+       GlobalHelper().showModalWebView(context, (){
+             _verifyByCress();   }, browserResponse.challengeRequest);
+    } else {
+      await Future.delayed(const Duration(seconds: 5));
+      try {
+        final response = await NuveiSdkFlutterTransactionInterface.instance
+            .verify(
+              OtpRequest(
+                user: OtpUser(id: widget.userId),
+                transaction: OtpTransaction(id: _transactionId),
+                moreInfo: true,
+                value: '',
+                type: 'AUTHENTICATION_CONTINUE',
+              ),
+            );
+
+         widget.onLoading(false);
+        if (!response.error) {
+          OtpResponse responseOtp = OtpResponse.fromJson(response.data);
+          
+
+          switch (responseOtp.transaction?.status) {
+            case 'succes':
+              _clearAllForms();
+              widget.onLoading(false);
+              widget.onSuccesProcess(true);
+              break;
+            case 'pending':
+              _verifyBy3ds(responseOtp.threeDs!.browserResponse);
+              break;
+            case 'failure':
+              _clearAllForms();
+              widget.onLoading(false);
+              widget.onSuccesProcess(false);
+              break;
+            default:
+          }
+        } else {
+          widget.onLoading(false);
+          ErrorResponseModel error = errorResponseModelFromJson(
+            jsonEncode(response.data),
+          );
+          widget.onErrorProcess(error);
+        }
+
+       
+      } catch (e) {
+        widget.onLoading(false);
+        return GeneralResponse(
+          error: true,
+          data: ErrorResponseModel(
+            error: Error(type: 'Exception', help: '', description: '$e'),
+          ),
+        );
+      }
+    }
+  }
+
+  _verifyByOtp() async {
+    widget.onLoading(true);
+    try {
+      final response = await NuveiSdkFlutterTransactionInterface.instance
+          .verify(
+            OtpRequest(
+              user: OtpUser(id: widget.userId),
+              transaction: OtpTransaction(id: _transactionId),
+              moreInfo: true,
+              value: _otpCodeController.text,
+              type: 'BY_OTP',
+            ),
+          );
+
+           widget.onLoading(false);
+
+      if (!response.error) {
+        OtpResponse responseOtp = OtpResponse.fromJson(response.data);
+        GlobalHelper.logger.w(jsonEncode(responseOtp));
+        GlobalHelper.logger.w('-.------');
+
+        GlobalHelper.logger.w(responseOtp.transaction?.statusDetail);
+
+        switch (responseOtp.transaction?.statusDetail) {
+          case 31:
+            _otpCodeController.clear();
+            _isOtpValid = false;
+            break;
+          case 32:
+            _activateOtp = false;
+            _clearAllForms();
+            widget.onSuccesProcess(true);
+            setState(() {
+              
+            });
+            break;
+          case 33:
+            _clearAllForms();
+            widget.onSuccesProcess(false);
+            break;
+          default:
+        }
+      } else {
+        ErrorResponseModel error = errorResponseModelFromJson(
+          jsonEncode(response.data),
+        );
+        widget.onErrorProcess(error);
+      }
+    } catch (e) {
+      widget.onLoading(false);
+      return GeneralResponse(
+        error: true,
+        data: ErrorResponseModel(
+          error: Error(type: 'Exception', help: '', description: '$e'),
+        ),
+      );
+    }
+  }
+
+  void _clearAllForms() {
+    _numberCardController.clear();
+    _holdenNameController.clear();
+    _cvcCodeController.clear();
+    _expireDateController.clear();
+    _otpCodeController.clear();
   }
 
   @override
@@ -122,7 +334,7 @@ class _FormAddCardWidgetState extends State<FormAddCardWidget> {
                 colorBorder: widget.borderColor ?? Colors.black,
                 controller: _numberCardController,
                 keyboardType: TextInputType.numberWithOptions(),
-
+                enabled: !_activateOtp,
                 autovalidateMode: AutovalidateMode.onUnfocus,
                 hintText: 'Number Card',
                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -132,8 +344,8 @@ class _FormAddCardWidgetState extends State<FormAddCardWidget> {
                       !CardHelper()
                           .getCardInfo(_numberCardController.text)
                           .validLengths
-                          .contains(value.trim().length)) {
-                    return 'Card number is not valid';
+                          .contains(value.trim().replaceAll(' ', '').length)) {
+                    return 'Card number is not valids';
                   }
                   if (!CardHelper.validateCardNumber(value)) {
                     return 'Card number is not valid';
@@ -153,6 +365,7 @@ class _FormAddCardWidgetState extends State<FormAddCardWidget> {
                 controller: _holdenNameController,
                 hintText: 'Holder´s Name',
                 maxLength: 20,
+                enabled: !_activateOtp,
                 autovalidateMode: AutovalidateMode.onUnfocus,
                 inputFormatters: [
                   FilteringTextInputFormatter.allow(RegExp(r'[A-Z ]')),
@@ -169,7 +382,7 @@ class _FormAddCardWidgetState extends State<FormAddCardWidget> {
                 },
               ),
             ),
-            
+
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Row(
@@ -179,6 +392,7 @@ class _FormAddCardWidgetState extends State<FormAddCardWidget> {
                       autovalidateMode: AutovalidateMode.onUnfocus,
                       controller: _expireDateController,
                       hintText: 'MM/YY',
+                      enabled: !_activateOtp,
                       keyboardType: TextInputType.numberWithOptions(),
                       validator:
                           (value) => CardHelper().validateExpiryDate(value),
@@ -201,6 +415,7 @@ class _FormAddCardWidgetState extends State<FormAddCardWidget> {
                       },
                       autovalidateMode: AutovalidateMode.onUnfocus,
                       focusNode: _cvcFocus,
+                      enabled: !_activateOtp,
                       keyboardType: TextInputType.numberWithOptions(),
                       maxLength:
                           CardHelper()
@@ -227,13 +442,45 @@ class _FormAddCardWidgetState extends State<FormAddCardWidget> {
                 ],
               ),
             ),
+            if (_activateOtp)
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextFormFieldWidget(
+                  controller: _otpCodeController,
+                  hintText: 'Otp Code',
+                  maxLength: 6,
+                  autovalidateMode: AutovalidateMode.onUnfocus,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'Otp code  is not valid';
+                    }
+                    if (value.length != 6) {
+                      return 'Otp code  is not valid';
+                    }
+
+                    return null;
+                  },
+                  onChanged: (v) {
+                    // _holdenNameController.text = v.toUpperCase();
+                    setState(() {});
+                  },
+                ),
+              ),
             SizedBox(height: 20),
             FilledButtonWidget(
-              text: 'Add Card',
+              text: _activateOtp ? 'Verify OTP' : 'Add Card',
               onPressed: () {
                 if (_keyForm.currentState!.validate()) {
-                  _addCardProcess();
+                  _activateOtp ? _verifyByOtp() : _addCardProcess();
                 }
+              },
+            ),
+            SizedBox(height: 20),
+            FilledButtonWidget(
+              text: 'show modal',
+              onPressed: () {
+               
               },
             ),
           ],

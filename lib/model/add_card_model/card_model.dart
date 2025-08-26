@@ -51,19 +51,19 @@ class CardModel {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = {};
+    if (number != null) data['number'] = number;
+    if (holderName != null) data['holder_name'] = holderName;
+    if (expiryMonth != null) data['expiry_month'] = expiryMonth;
+    if (expiryYear != null) data['expiry_year'] = expiryYear;
+    if (cvc != null) data["cvc"] = cvc;
+    if (type != null) data['type'] = type;
     if (bin != null) data['bin'] = bin;
     if (status != null) data['status'] = status;
     if (token != null) data['token'] = token;
-    if (expiryYear != null) data['expires_year'] = expiryYear;
-    if (expiryMonth != null) data['expires_month'] = expiryMonth;
     if (transactionReference != null) {
       data['transaction_reference'] = transactionReference;
     }
-    if (cvc != null) data["cvc"] = cvc;
-    if (type != null) data['type'] = type;
-    if (number != null) data['number'] = number;
     if (origin != null) data['origin'] = origin;
-    if (holderName != null) data['holder_name'] = holderName;
     if (message != null) data['message'] = message;
     return data;
   }

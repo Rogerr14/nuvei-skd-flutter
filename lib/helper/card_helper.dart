@@ -28,8 +28,9 @@ class CardHelper {
 
   CardInfo getCardInfo(String number) {
     
+    String cleanNumber =  number.trim().replaceAll(' ', '');
 return cardTypes.firstWhere(
-    (cardInfo) => cardInfo.regex.hasMatch(number.trim()),
+    (cardInfo) => cardInfo.regex.hasMatch(cleanNumber),
     orElse: () => CardInfo(
       type: 'Unknown',
       regex: RegExp(r'^$'),

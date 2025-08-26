@@ -58,6 +58,7 @@ class _ListCardsPageState extends State<ListCardsPage> {
       context: context,
       builder: (context) => Center(child: CircularProgressIndicator()),
     );
+
     final response = await NuveiSdkFlutter().deleteCard(
       tokenCard: tokenCard,
       userId: Constants.userId,
