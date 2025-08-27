@@ -9,36 +9,32 @@ class AddCardPage extends StatefulWidget {
 }
 
 class _AddCardPageState extends State<AddCardPage> {
+  
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            FormAddCardWidget(
-              email: 'erick.guillen@nuvei.com',
-              userId: '4',
-              onLoading: (value) {
-                if (value) {
-                  showDialog(
-                    context: context,
-                    builder:
-                        (context) => Center(child: CircularProgressIndicator()),
-                  );
-                } else {
-                  Navigator.pop(context);
-                }
-              },
-              onErrorProcess:(error) {
-                
-              },
-              onSuccesProcess: (approved) {
-                
-              },
-            ),
-          ],
-        ),
+      body: FormAddCardWidget(
+        email: 'erick.guillen@nuvei.com',
+        userId: '4',
+        onLoading: (value) {
+          if (value) {
+            showDialog(
+              context: context,
+              builder:
+                  (context) => Center(child: CircularProgressIndicator()),
+            );
+          } else {
+            Navigator.pop(context);
+          }
+        },
+        onErrorProcess:(error) {
+          
+        },
+        onSuccesProcess: (approved) {
+          
+        },
       ),
     );
   }

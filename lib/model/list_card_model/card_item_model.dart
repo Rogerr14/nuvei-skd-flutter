@@ -4,6 +4,8 @@
 
 import 'dart:convert';
 
+import 'package:nuvei_sdk_flutter/env/theme/app_theme.dart';
+
 CardItemModel cardItemModelFromJson(String str) => CardItemModel.fromJson(json.decode(str));
 
 String cardItemModelToJson(CardItemModel data) => json.encode(data.toJson());
@@ -18,6 +20,8 @@ class CardItemModel {
     String? transactionReference;
     String? type;
     String? number;
+    String? bank_name;
+    String icon;
 
     CardItemModel({
         this.bin,
@@ -29,6 +33,8 @@ class CardItemModel {
         this.transactionReference,
         this.type,
         this.number,
+        this.bank_name,
+        this.icon = AppTheme.iconUnknowCard
     });
 
     factory CardItemModel.fromJson(Map<String, dynamic> json) => CardItemModel(
@@ -41,6 +47,8 @@ class CardItemModel {
         transactionReference: json["transaction_reference"],
         type: json["type"],
         number: json["number"],
+        icon: json['icon'] ?? AppTheme.iconUnknowCard,
+        bank_name: json['bank_name']
     );
 
     Map<String, dynamic> toJson() => {
@@ -53,5 +61,6 @@ class CardItemModel {
         "transaction_reference": transactionReference,
         "type": type,
         "number": number,
+        "icon": icon
     };
 }

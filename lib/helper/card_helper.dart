@@ -26,6 +26,22 @@ class CardHelper {
     return result;
   }
 
+  CardInfo  getCardInfoBytipe(String type){
+    return cardTypes.firstWhere((cardInfo) => cardInfo.typeCode.contains(type),
+    orElse: () => CardInfo(
+      type: 'Unknown',
+      regex: RegExp(r'^$'),
+      mask: '#### #### #### ####',
+      cvcNumber: 3,
+      validLengths: [16],
+      typeCode: '',
+      icon: AppTheme.iconUnknowCard,
+      gradientColor: [Color(0xFF333333), Color(0xFF000000)],
+    ),);
+  }
+
+
+
   CardInfo getCardInfo(String number) {
     
     String cleanNumber =  number.trim().replaceAll(' ', '');

@@ -4,7 +4,6 @@
 
 import 'dart:convert';
 
-import 'package:nuvei_sdk_flutter/model/add_card_model/card_model.dart';
 import 'package:nuvei_sdk_flutter/model/list_card_model/card_item_model.dart';
 
 ListCardModel listCardModelFromJson(String str) => ListCardModel.fromJson(json.decode(str));

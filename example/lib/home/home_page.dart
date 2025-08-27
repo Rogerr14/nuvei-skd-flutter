@@ -2,10 +2,14 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:nuvei_sdk_flutter/helper/global_helper.dart';
 import 'package:nuvei_sdk_flutter/model/add_card_model/card_model.dart';
+import 'package:nuvei_sdk_flutter/model/list_card_model/card_item_model.dart';
 import 'package:nuvei_sdk_flutter/model/order_model.dart';
 import 'package:nuvei_sdk_flutter/model/payment_model/debit_model.dart';
+import 'package:nuvei_sdk_flutter/model/refund_payment_model/refund_response_model.dart';
+import 'package:nuvei_sdk_flutter/model/transaaction_response.dart';
 import 'package:nuvei_sdk_flutter/nuvei_sdk_flutter.dart';
 import 'package:nuvei_sdk_flutter/widget/filled_button_widget.dart';
 import 'package:nuvei_sdk_flutter_example/constanst/constants.dart';
@@ -19,7 +23,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  CardModel? cardModel;
+  CardItemModel? cardModel;
 
   @override
   void initState() {
@@ -44,13 +48,13 @@ class _HomePageState extends State<HomePage> {
       child: Scaffold(
         appBar: AppBar(
           centerTitle: true,
-          title: Image.asset(ThemeConfig().logoImagePath, width: size.width * 0.2),
+          title: Image.asset(
+            ThemeConfig().logoImagePath,
+            width: size.width * 0.2,
+          ),
         ),
         body: Padding(
-          padding: EdgeInsets.symmetric(
-            vertical: size.height * 0.03,
-           
-          ),
+          padding: EdgeInsets.symmetric(vertical: size.height * 0.04),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -59,42 +63,49 @@ class _HomePageState extends State<HomePage> {
                 child: DataTable(
                   showBottomBorder: true,
                   columns: [
-                    DataColumn(label: Text('Quantity')),
-                    DataColumn(label: Text('Description')),
-                    DataColumn(label: Text('Price')),
+                    DataColumn(label: Text('N°', style: TextStyle(fontWeight: FontWeight.w700),)),
+                    DataColumn(label: Text('Description', style: TextStyle(fontWeight: FontWeight.w700),), ),
+                    DataColumn(label: Text('Price', style: TextStyle(fontWeight: FontWeight.w700),)),
                   ],
                   rows: [
                     DataRow(
-                      cells: [ DataCell(Row(
-                          children: [
-                            Icon(Icons.shopping_bag_rounded),
-                            Text("2"),
-                          ],
-                        )),
+                      cells: [
+                        DataCell(
+                          Row(
+                            children: [
+                              Icon(Icons.shopping_bag_rounded),
+                              Text("2"),
+                            ],
+                          ),
+                        ),
                         DataCell(Text("Milk Shake")),
                         DataCell(Text("\$13.90")),
                       ],
                     ),
                     DataRow(
                       cells: [
-                        DataCell(Row(
-                          children: [
-                            Icon(Icons.shopping_bag_rounded),
-                            Text("2"),
-                          ],
-                        )),
+                        DataCell(
+                          Row(
+                            children: [
+                              Icon(Icons.shopping_bag_rounded),
+                              Text("2"),
+                            ],
+                          ),
+                        ),
                         DataCell(Text("Milk Shake")),
                         DataCell(Text("\$13.90")),
                       ],
                     ),
                     DataRow(
                       cells: [
-                         DataCell(Row(
-                          children: [
-                            Icon(Icons.shopping_bag_rounded),
-                            Text("2"),
-                          ],
-                        )),
+                        DataCell(
+                          Row(
+                            children: [
+                              Icon(Icons.shopping_bag_rounded),
+                              Text("2"),
+                            ],
+                          ),
+                        ),
                         DataCell(Text("Milk Shake")),
                         DataCell(Text("\$13.90")),
                       ],
@@ -106,8 +117,8 @@ class _HomePageState extends State<HomePage> {
               Column(
                 children: [
                   SizedBox(
-                    height: size.height * 0.15,
-                    width: size.width * 0.8,
+                    // height: size.height * 0.15,
+                    width: size.width * 0.9,
                     child: Card(
                       child: InkWell(
                         onTap: () async {
@@ -117,7 +128,7 @@ class _HomePageState extends State<HomePage> {
                             arguments: cardModel,
                           );
                           if (result != null) {
-                            cardModel = result as CardModel?;
+                            cardModel = result as CardItemModel?;
 
                             setState(() {});
                           }
@@ -136,16 +147,32 @@ class _HomePageState extends State<HomePage> {
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
-                                      Text("Need to select a card to continue"),
+                                      Text("To continue, you need to select one"),
                                     ],
                                   )
-                                  : Column(
+                                  : Row(
                                     children: [
-                                      Text(cardModel?.holderName ?? ''),
-                                      Text(
-                                        '---- ---- ---- ${cardModel?.number ?? ''}',
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                                        child: SvgPicture.asset(
+                                          cardModel?.icon ?? '',
+                                          width: size.width * 0.15,
+                                          package: 'nuvei_sdk_flutter',
+                                        ),
                                       ),
-                                      Text("cvc ${cardModel?.cvc ?? ''}"),
+                                      
+                                      Column(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          Text(cardModel?.holderName ?? ''),
+                                          Text(
+                                            '---- ---- ---- ${cardModel?.number ?? ''}',
+                                          ),
+                                          Text(
+                                            'Exp: ${cardModel?.expiryYear ?? ''}',
+                                          ),
+                                        ],
+                                      ),
                                     ],
                                   ),
                         ),
@@ -153,73 +180,47 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   SizedBox(height: 10),
-                  FilledButtonWidget(
-                    text: 'Order pay',
-                    onPressed: () async {
-                      showDialog(
-                        context: context,
-                        builder:
-                            (context) =>
-                                Center(child: CircularProgressIndicator()),
-                      );
-                      final response = await NuveiSdkFlutter().debit(
-                        userInformation: User(
-                          id: Constants.userId,
-                          email: "email@gmail.com",
-                        ),
-                        ordeInformation: Order(
-                          amount: 88.9,
-                          description: "breakfast",
-                          devReference: "reference",
-                          vat: 0,
-                          taxableAmount: 0,
-                          taxPercentage: 0,
-                        ),
-                        cardInformation: CardModel(
-                          token: cardModel?.token ?? '',
-                        ),
-                      );
-                      Navigator.pop(context);
-                      if (!response.error) {
-                        log(jsonEncode(response.data));
+                  SizedBox(
+                    
+                    width: size.width * 0.9,
+                    child: FilledButtonWidget(
+                      borderRadius: 10,
+                      text: 'Pay Order',
+                      fontSize: 17,
+                      onPressed: () async {
                         showDialog(
                           context: context,
                           builder:
-                              (context) => Scaffold(
-                                backgroundColor: Colors.transparent,
-                                body: Center(
-                                  child: SizedBox(
-                                    height:
-                                        MediaQuery.of(context).size.height *
-                                        0.3,
-                                    width:
-                                        MediaQuery.of(context).size.width * 0.9,
-                                    child: Card(
-                                      child: Center(
-                                        child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Text(
-                                              response.data,
-                                              style: TextStyle(fontSize: 20),
-                                            ),
-                                            FilledButtonWidget(
-                                              text: "Close",
-                                              onPressed: () async {
-                                                Navigator.pop(context);
-                                              },
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
+                              (context) =>
+                                  Center(child: CircularProgressIndicator()),
                         );
-                      }
-                    },
+                        final response = await NuveiSdkFlutter().debit(
+                          userInformation: User(
+                            id: Constants.userId,
+                            email: "email@gmail.com",
+                          ),
+                          ordeInformation: Order(
+                            amount: 88.9,
+                            description: "breakfast",
+                            devReference: "reference",
+                            vat: 0,
+                            taxableAmount: 0,
+                            taxPercentage: 0,
+                          ),
+                          cardInformation: CardModel(
+                            token: cardModel?.token ?? '',
+                          ),
+                        );
+                        Navigator.pop(context);
+
+                          GlobalHelper.logger.w('entra ${response.error}');
+                        if (!response.error) {
+                          TransactionResponse payment = transactionResponseFromJson(jsonEncode(response.data));
+                          Navigator.pushNamed(context,'payment_detail',arguments: payment);
+                          
+                        }
+                      },
+                    ),
                   ),
                 ],
               ),

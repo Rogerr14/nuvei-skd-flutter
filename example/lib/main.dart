@@ -48,18 +48,23 @@ class _WelcomeExampleState extends State<WelcomeExample> {
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
-
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Image.asset(ThemeConfig().logoImagePath, width: 240),
-                Text("Sdk", style: TextStyle(fontSize: 25),),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Image.asset(ThemeConfig().logoImagePath, width: 200),
+                ),
+                Text("Sdk", style: TextStyle(fontSize: 15),),
                 
               ],
             ),
-            SizedBox(height: 10,),
             FilledButtonWidget(
               borderRadius: 10,
+              width: 200,
               text: 'Init simulation',
-              fontSize: 16,
+              fontSize: 17,
+              
+              fontWeight: FontWeight.w500,
               onPressed: () {
                 Navigator.pushReplacementNamed(context, 'home');
               },

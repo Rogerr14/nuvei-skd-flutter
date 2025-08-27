@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:nuvei_sdk_flutter/model/add_card_model/card_model.dart';
 import 'package:nuvei_sdk_flutter/model/error_model.dart';
 import 'package:nuvei_sdk_flutter/model/list_card_model/card_item_model.dart';
@@ -27,8 +28,7 @@ class _ListCardsPageState extends State<ListCardsPage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-
-    getCards();
+      getCards();
     });
   }
 
@@ -103,8 +103,6 @@ class _ListCardsPageState extends State<ListCardsPage> {
     final size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
-        actions: [],
-        leading: Container(),
         centerTitle: true,
         title: Image.asset(ThemeConfig().logoImagePath, width: 100),
       ),
@@ -115,75 +113,131 @@ class _ListCardsPageState extends State<ListCardsPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text("List of Cards"),
+            Text("Card´s List", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),),
             SizedBox(
-              height: size.height * 0.7,
-              // width: size.width * 0.9,
-              child:( listCardsAvaliable.isEmpty)? 
-              
-                Text('No cards avaliable')
-              : ListView.builder(
-                itemCount: listCardsAvaliable.length,
-        
-                itemBuilder:
-                    (context, index) => Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: InkWell(
-                        onTap: () {
-                          CardItemModel cardModelSelect = listCardsAvaliable[index];
-                          Navigator.pop(context, cardModelSelect);
-                        },
-                        child: Card(
-                          child: Padding(
-                            padding: EdgeInsets.all(10),
-                            child: Row(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Image.asset(
-                                    ThemeConfig().logoImagePath,
-                                    width: 50,
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        listCardsAvaliable[index].holderName ??
-                                            '',
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      Text(
-                                        "---- ---- ---- ${listCardsAvaliable[index].number ?? ''}",
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                IconButton(
-                                  icon: Icon(
-                                    Icons.delete_forever,
-                                    color: Colors.red,
-                                  ),
-                                  onPressed: () {
-                                    deleteCard(
-                                      listCardsAvaliable[index].token ?? '',
-                                    );
-                                  },
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
+              width: size.width * 0.9,
+              height: 45,
+              child: FilledButtonWidget(
+                borderRadius: 10,
+                text: 'Reload Card list',
+                fontSize: 17,
+                onPressed: () {
+                  getCards();
+                },
               ),
             ),
-            FilledButtonWidget(
-              text: 'Add a new Card',
-              onPressed: () => Navigator.pushNamed(context, "add_card"),
+            SizedBox(
+              height: size.height * 0.65,
+              // width: size.width * 0.9,
+              child:
+                  (listCardsAvaliable.isEmpty)
+                      ? Text('No cards avaliable')
+                      : ListView.builder(
+                        itemCount: listCardsAvaliable.length,
+
+                        itemBuilder:
+                            (context, index) => Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: InkWell(
+                                onTap: () {
+                                  CardItemModel cardModelSelect =
+                                      listCardsAvaliable[index];
+                                  Navigator.pop(context, cardModelSelect);
+                                },
+                                child: Card(
+                                  child: Padding(
+                                    padding: EdgeInsets.all(10),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.all(5),
+                                          child: SvgPicture.asset(
+                                            listCardsAvaliable[index].icon,
+                                            width: size.width * 0.15,
+                                            package: 'nuvei_sdk_flutter',
+                                          ),
+                                        ),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  Text('Name: ',  style: TextStyle(
+                                                      fontWeight: FontWeight.bold,
+                                                    ),),
+                                                  Text(
+                                                    listCardsAvaliable[index]
+                                                            .holderName ??
+                                                        '',
+                                                   
+                                                  ),
+                                                ],
+                                              ),
+                                              Row(
+                                                children: [
+                                                  Text('Number: ',  style: TextStyle(
+                                                      fontWeight: FontWeight.bold,
+                                                    ),),
+                                                  Text(
+                                                    "**** **** **** ${listCardsAvaliable[index].number ?? ''}",
+                                                  ),
+                                                ],
+                                              ),
+                                               Row(
+                                                children: [
+                                                  Text('Type: ',  style: TextStyle(
+                                                      fontWeight: FontWeight.bold,
+                                                    ),),
+                                                  Text(
+                                                    listCardsAvaliable[index].type ?? '',
+                                                  ),
+                                                ],
+                                              ),
+                                               Row(
+                                                children: [
+                                                  Text('Expriy Date: ',  style: TextStyle(
+                                                      fontWeight: FontWeight.bold,
+                                                    ),),
+                                                  Text(
+                                                    '${listCardsAvaliable[index].expiryMonth ?? ''}/${listCardsAvaliable[index].expiryYear?.replaceRange(0, 2, '')} ' ,
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        IconButton(
+                                          icon: Icon(
+                                            Icons.delete_forever,
+                                            color: Colors.red,
+                                          ),
+                                          onPressed: () {
+                                            deleteCard(
+                                              listCardsAvaliable[index].token ??
+                                                  '',
+                                            );
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                      ),
+            ),
+            SizedBox(
+              height: 45,
+              width: size.width * 0.9,
+              child: FilledButtonWidget(
+              borderRadius: 10,  
+              fontSize: 17,
+                text: 'Add new card',
+                onPressed: () => Navigator.pushNamed(context, "add_card"),
+              ),
             ),
           ],
         ),

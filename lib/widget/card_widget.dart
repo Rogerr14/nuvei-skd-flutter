@@ -74,7 +74,7 @@ class _CardWidgetState extends State<CardWidget> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "Card´s holder",
+                          "Holder´s name",
 
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
@@ -94,9 +94,10 @@ class _CardWidgetState extends State<CardWidget> {
                       ],
                     ),
                     Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "Expiration date",
+                          "Expiraty date",
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: size.longestSide * 0.016,

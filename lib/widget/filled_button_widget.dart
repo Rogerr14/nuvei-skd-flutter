@@ -37,9 +37,9 @@ class _FilledButtonWidgetState extends State<FilledButtonWidget> {
     
     return FilledButton(
       style: ButtonStyle(
-        // minimumSize: WidgetStateProperty.all<Size>(
-        //     Size(widget.width!, responsive.isTablet ? responsive.hp(5) : widget.height!)
-        //     ),
+        minimumSize: WidgetStateProperty.all<Size>(
+            Size(widget.width!, widget.height!)
+            ),
         shape: WidgetStateProperty.all<RoundedRectangleBorder>(
           RoundedRectangleBorder(
               borderRadius: BorderRadius.circular( widget.borderRadius!)

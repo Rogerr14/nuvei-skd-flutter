@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:nuvei_sdk_flutter/model/add_card_model/card_model.dart';
+import 'package:nuvei_sdk_flutter/model/list_card_model/card_item_model.dart';
 import 'package:nuvei_sdk_flutter/model/transaction_model.dart';
 
 TransactionResponse transactionResponseFromJson(String str) => TransactionResponse.fromJson(json.decode(str));
@@ -9,7 +10,7 @@ String transactionResponseToJson(TransactionResponse data) => json.encode(data.t
 
 class TransactionResponse {
   TransactionModel transaction;
-  CardModel card;
+  CardItemModel card;
   ThreeDS? threeDS;
 
   TransactionResponse({
@@ -21,7 +22,7 @@ class TransactionResponse {
   factory TransactionResponse.fromJson(Map<String, dynamic> json) {
     return TransactionResponse(
       transaction: TransactionModel.fromJson(json['transaction'] as Map<String, dynamic>),
-      card: CardModel.fromJson(json['card'] as Map<String, dynamic>),
+      card: CardItemModel.fromJson(json['card'] as Map<String, dynamic>),
       threeDS: json['3ds'] != null ? ThreeDS.fromJson(json['3ds'] as Map<String, dynamic>) : null,
     );
   }

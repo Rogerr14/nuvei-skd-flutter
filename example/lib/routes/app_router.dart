@@ -3,6 +3,7 @@ import 'package:nuvei_sdk_flutter_example/add_card/add_card_page.dart';
 import 'package:nuvei_sdk_flutter_example/home/home_page.dart';
 import 'package:nuvei_sdk_flutter_example/list_cards/list_cards_page.dart';
 import 'package:nuvei_sdk_flutter_example/main.dart';
+import 'package:nuvei_sdk_flutter_example/payment_detail/page/payment_detail_page.dart';
 
 class AppRouter {
   String initialRoute = 'welcome';
@@ -10,6 +11,7 @@ class AppRouter {
     'welcome': (_) => WelcomeExample(),
     'home': (_) => HomePage(),
     'list_card': (_)=> ListCardsPage(),
-    "add_card":(_)=>AddCardPage()
+    "add_card":(_)=>AddCardPage(),
+    "payment_detail": (_)=>PaymentDetailPage()
   };
 }

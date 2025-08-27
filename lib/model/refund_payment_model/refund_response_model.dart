@@ -14,7 +14,7 @@ class RefundResponseModel {
     String? status;
     TransactionModel? transaction;
     String? detail;
-    Card? card;
+    CardData? card;
 
     RefundResponseModel({
         this.status,
@@ -27,7 +27,7 @@ class RefundResponseModel {
         status: json["status"],
         transaction: json["transaction"] == null ? null : TransactionModel.fromJson(json["transaction"]),
         detail: json["detail"],
-        card: json["card"] == null ? null : Card.fromJson(json["card"]),
+        card: json["card"] == null ? null : CardData.fromJson(json["card"]),
     );
 
     Map<String, dynamic> toJson() => {
@@ -38,7 +38,7 @@ class RefundResponseModel {
     };
 }
 
-class Card {
+class CardData {
     String? bin;
     String? status;
     String? token;
@@ -49,7 +49,7 @@ class Card {
     String? number;
     String? origin;
 
-    Card({
+    CardData({
         this.bin,
         this.status,
         this.token,
@@ -61,7 +61,7 @@ class Card {
         this.origin,
     });
 
-    factory Card.fromJson(Map<String, dynamic> json) => Card(
+    factory CardData.fromJson(Map<String, dynamic> json) => CardData(
         bin: json["bin"],
         status: json["status"],
         token: json["token"],

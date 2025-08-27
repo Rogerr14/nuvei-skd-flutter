@@ -5,6 +5,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:nuvei_sdk_flutter/env/environment.dart';
+import 'package:nuvei_sdk_flutter/helper/card_helper.dart';
 import 'package:nuvei_sdk_flutter/helper/global_helper.dart';
 import 'package:nuvei_sdk_flutter/model/add_card_model/card_model.dart';
 import 'package:nuvei_sdk_flutter/model/add_card_model/card_response_model.dart';
@@ -97,11 +98,26 @@ class NuveiSdkFlutterMethodTransaction
           jsonEncode(response.data),
         );
 
+       final List<CardItemModel> validCards  = listCards.cards.where((card) => card.status == 'valid')
+       .map((card){
+        GlobalHelper.logger.w('type card: ${card.type}');
+        card.icon = CardHelper().getCardInfoBytipe(card.type ?? '').icon;
+        return card;
+       }).toList();
+
+        listCards.cards = validCards;
+
         return GeneralResponse(error: false, data: listCards);
       }
       return response;
     } catch (e) {
-      return GeneralResponse(error: true, data: null);
+      GlobalHelper.logger.e('ERROOOR: $e');
+       return GeneralResponse(
+        error: true,
+        data: ErrorResponseModel(
+          error: Error(type: 'Exception', help: '', description: '$e'),
+        ),
+      );
     }
   }
 
@@ -171,6 +187,7 @@ class NuveiSdkFlutterMethodTransaction
         env.serverKey,
         transaction,
       );
+      GlobalHelper.logger.w('request error: ${response.error}');
       if (!response.error) {
         TransactionResponse data = transactionResponseFromJson(
           jsonEncode(response.data),
@@ -179,6 +196,7 @@ class NuveiSdkFlutterMethodTransaction
       }
       return response;
     } catch (e) {
+      GlobalHelper.logger.e('ERROOOR: $e');
        return GeneralResponse(
         error: true,
         data: ErrorResponseModel(

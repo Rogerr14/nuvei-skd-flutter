@@ -1,8 +1,8 @@
 class Constants {
-  // static const String appCode = 'SDKHIBRIDOTEST-EC-CLIENT';
-  // static const String appKey = 'jpHQNgutccQQ0uHuzme2ctfol1neBy';
-  static const String appCode = 'MODIRUMTEST-EC';
-  static const String appKey = 'NXaK6ukvqwaPshOtFfJAhN9dkPnloR';
+  static const String appCode = 'SDKHIBRIDOTEST-EC-CLIENT';
+  static const String appKey = 'jpHQNgutccQQ0uHuzme2ctfol1neBy';
+  // static const String appCode = 'MODIRUMTEST-EC';
+  // static const String appKey = 'NXaK6ukvqwaPshOtFfJAhN9dkPnloR';
   
 
   static const String serverCode = 'SDKHIBRIDOTEST-EC-SERVER';

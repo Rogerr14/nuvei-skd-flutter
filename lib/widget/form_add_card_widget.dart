@@ -26,6 +26,7 @@ class FormAddCardWidget extends StatefulWidget {
     this.hintTextColor,
     this.textInputColor,
     this.backgroundInputColor,
+    this.backgroundButtonColor = Colors.black,
     required this.email,
     required this.userId,
     required this.onLoading,
@@ -38,8 +39,10 @@ class FormAddCardWidget extends StatefulWidget {
   final Color? hintTextColor;
   final Color? textInputColor;
   final Color? backgroundInputColor;
+  final Color backgroundButtonColor;
   final String userId;
   final String email;
+  
   final Function(bool value) onLoading;
   final void Function(bool approved) onSuccesProcess;
   final void Function(ErrorResponseModel error) onErrorProcess;
@@ -310,179 +313,188 @@ class _FormAddCardWidgetState extends State<FormAddCardWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     return SingleChildScrollView(
       child: Form(
         key: _keyForm,
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            CardWidget(
-              svgCard:
-                  CardHelper().getCardInfo(_numberCardController.text).icon,
-              gradientCard:
-                  CardHelper()
-                      .getCardInfo(_numberCardController.text)
-                      .gradientColor,
-              controllerCard: controller,
-              holderName: _holdenNameController.text,
-              cardNumber: _numberCardController.text,
-              cvcCode: _cvcCodeController.text,
-              expirationDate: _expireDateController.text,
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextFormFieldWidget(
-                colorBorder: widget.borderColor ?? Colors.black,
-                controller: _numberCardController,
-                keyboardType: TextInputType.numberWithOptions(),
-                enabled: !_activateOtp,
-                autovalidateMode: AutovalidateMode.onUnfocus,
-                hintText: 'Number Card',
-                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                validator: (value) {
-                  if (value == null ||
-                      value.trim().isEmpty ||
-                      !CardHelper()
+            Column(
+              children: [
+                CardWidget(
+                  svgCard:
+                      CardHelper().getCardInfo(_numberCardController.text).icon,
+                  gradientCard:
+                      CardHelper()
                           .getCardInfo(_numberCardController.text)
-                          .validLengths
-                          .contains(value.trim().replaceAll(' ', '').length)) {
-                    return 'Card number is not valids';
-                  }
-                  if (!CardHelper.validateCardNumber(value)) {
-                    return 'Card number is not valid';
-                  }
-
-                  return null;
-                },
-                onChanged: (value) {
-                  _numberCardController.text = CardHelper().applyMask(value);
-                  setState(() {});
-                },
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextFormFieldWidget(
-                controller: _holdenNameController,
-                hintText: 'Holder´s Name',
-                maxLength: 20,
-                enabled: !_activateOtp,
-                autovalidateMode: AutovalidateMode.onUnfocus,
-                inputFormatters: [
-                  FilteringTextInputFormatter.allow(RegExp(r'[A-Z ]')),
-                ],
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Holder name is not valid';
-                  }
-                  return null;
-                },
-                onChanged: (v) {
-                  // _holdenNameController.text = v.toUpperCase();
-                  setState(() {});
-                },
-              ),
-            ),
-
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextFormFieldWidget(
-                      autovalidateMode: AutovalidateMode.onUnfocus,
-                      controller: _expireDateController,
-                      hintText: 'MM/YY',
-                      enabled: !_activateOtp,
-                      keyboardType: TextInputType.numberWithOptions(),
-                      validator:
-                          (value) => CardHelper().validateExpiryDate(value),
-                      onChanged: (value) {
-                        _expireDateController.text = CardHelper().formatExpiry(
-                          value,
-                        );
-                        setState(() {});
-                      },
-                      maxLength: 5,
-                    ),
-                  ),
-                  SizedBox(width: 10),
-                  Expanded(
-                    child: TextFormFieldWidget(
-                      controller: _cvcCodeController,
-                      hintText: 'CVV/CVC',
-                      onChanged: (va) {
-                        setState(() {});
-                      },
-                      autovalidateMode: AutovalidateMode.onUnfocus,
-                      focusNode: _cvcFocus,
-                      enabled: !_activateOtp,
-                      keyboardType: TextInputType.numberWithOptions(),
-                      maxLength:
-                          CardHelper()
+                          .gradientColor,
+                  controllerCard: controller,
+                  holderName: _holdenNameController.text,
+                  cardNumber: _numberCardController.text,
+                  cvcCode: _cvcCodeController.text,
+                  expirationDate: _expireDateController.text,
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextFormFieldWidget(
+                    colorBorder: widget.borderColor ?? Colors.black,
+                    controller: _numberCardController,
+                    keyboardType: TextInputType.numberWithOptions(),
+                    enabled: !_activateOtp,
+                    autovalidateMode: AutovalidateMode.onUnfocus,
+                    hintText: 'Number Card',
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    validator: (value) {
+                      if (value == null ||
+                          value.trim().isEmpty ||
+                          !CardHelper()
                               .getCardInfo(_numberCardController.text)
-                              .cvcNumber,
-
+                              .validLengths
+                              .contains(value.trim().replaceAll(' ', '').length)) {
+                        return 'Card number is not valids';
+                      }
+                      if (!CardHelper.validateCardNumber(value)) {
+                        return 'Card number is not valid';
+                      }
+                
+                      return null;
+                    },
+                    onChanged: (value) {
+                      _numberCardController.text = CardHelper().applyMask(value);
+                      setState(() {});
+                    },
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextFormFieldWidget(
+                    controller: _holdenNameController,
+                    hintText: 'Holder´s Name',
+                    maxLength: 20,
+                    enabled: !_activateOtp,
+                    autovalidateMode: AutovalidateMode.onUnfocus,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(RegExp(r'[A-Z ]')),
+                    ],
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Holder name is not valid';
+                      }
+                      return null;
+                    },
+                    onChanged: (v) {
+                      // _holdenNameController.text = v.toUpperCase();
+                      setState(() {});
+                    },
+                  ),
+                ),
+                
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: TextFormFieldWidget(
+                          autovalidateMode: AutovalidateMode.onUnfocus,
+                          controller: _expireDateController,
+                          hintText: 'MM/YY',
+                          enabled: !_activateOtp,
+                          keyboardType: TextInputType.numberWithOptions(),
+                          validator:
+                              (value) => CardHelper().validateExpiryDate(value),
+                          onChanged: (value) {
+                            _expireDateController.text = CardHelper().formatExpiry(
+                              value,
+                            );
+                            setState(() {});
+                          },
+                          maxLength: 5,
+                        ),
+                      ),
+                      SizedBox(width: 10),
+                      Expanded(
+                        child: TextFormFieldWidget(
+                          controller: _cvcCodeController,
+                          hintText: 'CVV/CVC',
+                          onChanged: (va) {
+                            setState(() {});
+                          },
+                          autovalidateMode: AutovalidateMode.onUnfocus,
+                          focusNode: _cvcFocus,
+                          enabled: !_activateOtp,
+                          keyboardType: TextInputType.numberWithOptions(),
+                          maxLength:
+                              CardHelper()
+                                  .getCardInfo(_numberCardController.text)
+                                  .cvcNumber,
+                
+                          validator: (value) {
+                            if (value == null ||
+                                value.trim().isEmpty ||
+                                CardHelper()
+                                        .getCardInfo(_numberCardController.text)
+                                        .cvcNumber !=
+                                    _cvcCodeController.text.length) {
+                              return 'CVC is not valid';
+                            }
+                            return null;
+                          },
+                          onTapOutside: () {
+                            _cvcFlipCard();
+                          },
+                          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                if (_activateOtp)
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TextFormFieldWidget(
+                      controller: _otpCodeController,
+                      hintText: 'Otp Code',
+                      maxLength: 6,
+                      autovalidateMode: AutovalidateMode.onUnfocus,
+                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                       validator: (value) {
-                        if (value == null ||
-                            value.trim().isEmpty ||
-                            CardHelper()
-                                    .getCardInfo(_numberCardController.text)
-                                    .cvcNumber !=
-                                _cvcCodeController.text.length) {
-                          return 'CVC is not valid';
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Otp code  is not valid';
                         }
+                        if (value.length != 6) {
+                          return 'Otp code  is not valid';
+                        }
+                
                         return null;
                       },
-                      onTapOutside: () {
-                        _cvcFlipCard();
+                      onChanged: (v) {
+                        // _holdenNameController.text = v.toUpperCase();
+                        setState(() {});
                       },
-                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                     ),
                   ),
-                ],
-              ),
+              ],
             ),
-            if (_activateOtp)
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextFormFieldWidget(
-                  controller: _otpCodeController,
-                  hintText: 'Otp Code',
-                  maxLength: 6,
-                  autovalidateMode: AutovalidateMode.onUnfocus,
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return 'Otp code  is not valid';
+                FilledButtonWidget(
+                  width: size.width * 0.9,
+                  borderRadius: 10,
+                  color: widget.backgroundButtonColor,
+                  text: _activateOtp ? 'Verify OTP' : 'Add Card',
+                  onPressed: () {
+                    if (_keyForm.currentState!.validate()) {
+                      _activateOtp ? _verifyByOtp() : _addCardProcess();
                     }
-                    if (value.length != 6) {
-                      return 'Otp code  is not valid';
-                    }
-
-                    return null;
-                  },
-                  onChanged: (v) {
-                    // _holdenNameController.text = v.toUpperCase();
-                    setState(() {});
                   },
                 ),
-              ),
-            SizedBox(height: 20),
-            FilledButtonWidget(
-              text: _activateOtp ? 'Verify OTP' : 'Add Card',
-              onPressed: () {
-                if (_keyForm.currentState!.validate()) {
-                  _activateOtp ? _verifyByOtp() : _addCardProcess();
-                }
-              },
-            ),
-            SizedBox(height: 20),
-            FilledButtonWidget(
-              text: 'show modal',
-              onPressed: () {
-               
-              },
-            ),
+                // SizedBox(height: 20),
+                // FilledButtonWidget(
+                //   width: size.width * 0.9,
+                //   text: 'show modal',
+                //   onPressed: () {
+                   
+                //   },
+                // ),
           ],
         ),
       ),
